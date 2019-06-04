@@ -54,11 +54,11 @@ public class SchedulerDaemon extends ServiceBasedAppLauncher {
 
   public static void main(String[] args)
       throws Exception {
-    if (args.length < 1 || args.length > 2) {
-      System.err.println(
-          "Usage: SchedulerDaemon <default configuration properties file> [custom configuration properties file]");
-      System.exit(1);
-    }
+//    if (args.length < 1 || args.length > 2) {
+//      System.err.println(
+//          "Usage: SchedulerDaemon <default configuration properties file> [custom configuration properties file]");
+//      System.exit(1);
+//    }
 
     // Load default framework configuration properties
     Properties defaultProperties = ConfigurationConverter.getProperties(new PropertiesConfiguration(args[0]));
