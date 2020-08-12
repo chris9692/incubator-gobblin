@@ -1,0 +1,37 @@
+job.name=testJob
+
+source.class=org.apache.gobblin.org.apache.gobblin.multistage.source.JdbcSource
+converter.classes=org.apache.gobblin.converter.csv.CsvToJsonConverterV2,org.apache.gobblin.converter.avro.JsonIntermediateToAvroConverter
+
+ms.extractor.class=org.apache.gobblin.org.apache.gobblin.multistage.extractor.CsvExtractor
+ms.http.client.factory=org.apache.gobblin.org.apache.gobblin.multistage.factory.ApacheHttpClientFactory
+
+extract.namespace=RightNow
+extract.table.name=ANSWERS
+extract.table.type=SNAPSHOT_ONLY
+extract.is.full=true
+
+ms.authentication=
+ms.data.field=
+ms.enable.cleansing=true
+ms.watermark=[{"name": "system","type": "datetime", "range": {"from": "2020-01-01", "to": "2020-01-31"}}]
+ms.output.schema=[{"columnName":"MENUS2_Firefly_Bug_Class","isNullable":"true","dataType":{"type":"string"}},{"columnName":"MENUS2_Firefly_Bug_Status","isNullable":"true","dataType":{"type":"string"}},{"columnName":"a_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"access_mask","isNullable":"true","dataType":{"type":"string"}},{"columnName":"admin_last_access","isNullable":"true","dataType":{"type":"string"}},{"columnName":"assgn_acct_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"assgn_group_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"ault_solved_count","isNullable":"true","dataType":{"type":"string"}},{"columnName":"aust_solved_count","isNullable":"true","dataType":{"type":"string"}},{"columnName":"banner_acct_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"banner_flag","isNullable":"true","dataType":{"type":"string"}},{"columnName":"banner_txt","isNullable":"true","dataType":{"type":"string"}},{"columnName":"banner_upd","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_answer_entity","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_answer_language","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_answer_type","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_answer_updated","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_content_changed_date","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_firefly_issue_key","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_firefly_last_updated","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_hc_feature_launcher_article_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_internal_product","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_last_trans_req","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_master_answer","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_primary_audience","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_root_answer_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_std_txt_bridge_fail_date","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_std_txt_bridge_result","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_stdtxt_copied_date","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_support_reviewed_date","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_support_reviewer","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_translation_requirements","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_translation_return_type","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_translation_status","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_version","isNullable":"true","dataType":{"type":"string"}},{"columnName":"c_visibility","isNullable":"true","dataType":{"type":"string"}},{"columnName":"created","isNullable":"true","dataType":{"type":"string"}},{"columnName":"description","isNullable":"true","dataType":{"type":"string"}},{"columnName":"dt_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"escldate","isNullable":"true","dataType":{"type":"string"}},{"columnName":"escllevel","isNullable":"true","dataType":{"type":"string"}},{"columnName":"eust_solved_count","isNullable":"true","dataType":{"type":"string"}},{"columnName":"expires","isNullable":"true","dataType":{"type":"string"}},{"columnName":"keywords","isNullable":"true","dataType":{"type":"string"}},{"columnName":"lang_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"last_access","isNullable":"true","dataType":{"type":"string"}},{"columnName":"last_edited_by","isNullable":"true","dataType":{"type":"string"}},{"columnName":"last_notify","isNullable":"true","dataType":{"type":"string"}},{"columnName":"m_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"next_notify","isNullable":"true","dataType":{"type":"string"}},{"columnName":"notes","isNullable":"true","dataType":{"type":"string"}},{"columnName":"position","isNullable":"true","dataType":{"type":"string"}},{"columnName":"publish_on","isNullable":"true","dataType":{"type":"string"}},{"columnName":"rule_state","isNullable":"true","dataType":{"type":"string"}},{"columnName":"solution","isNullable":"true","dataType":{"type":"string"}},{"columnName":"solved_count","isNullable":"true","dataType":{"type":"string"}},{"columnName":"static_solved","isNullable":"true","dataType":{"type":"string"}},{"columnName":"status_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"status_type","isNullable":"true","dataType":{"type":"string"}},{"columnName":"summary","isNullable":"true","dataType":{"type":"string"}},{"columnName":"type","isNullable":"true","dataType":{"type":"string"}},{"columnName":"updated","isNullable":"true","dataType":{"type":"string"}},{"columnName":"url","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_draft_note","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_drafted","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_is_live","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_parent_version_id","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_publish_note","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_published","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_state","isNullable":"true","dataType":{"type":"string"}},{"columnName":"v_unpublished","isNullable":"true","dataType":{"type":"string"}}]
+ms.jdbc.statement=select * from linkedin.answers limit {{limit}} offset {{offset}}
+ms.source.uri=jdbc:mysql://odbcva01.rightnowtech.com:3630/linkedin?useSSL=false
+ms.session.key.field=
+ms.total.count.field=
+ms.pagination={"initialvalues": [0, 1000]}
+ms.parameters=[{"name": "offset", "type": "pagestart"}, {"name": "limit", "type": "pagesize"}]
+
+fs.uri=file://localhost/
+state.store.fs.uri=file://localhost/
+data.publisher.final.dir=/tmp/gobblin/job-output
+
+writer.destination.type=HDFS
+writer.output.format=AVRO
+
+source.conn.username=
+source.conn.password=
+
+
+

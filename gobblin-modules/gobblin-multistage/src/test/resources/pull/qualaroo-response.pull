@@ -1,0 +1,39 @@
+job.name=testJob
+
+source.class=org.apache.gobblin.org.apache.gobblin.multistage.source.HttpSource
+converter.classes=org.apache.gobblin.converter.avro.JsonIntermediateToAvroConverter,org.apache.gobblin.converter.LumosAttributesConverter
+
+ms.extractor.class=org.apache.gobblin.org.apache.gobblin.multistage.extractor.JsonExtractor
+ms.http.client.factory=org.apache.gobblin.org.apache.gobblin.multistage.factory.ApacheHttpClientFactory
+
+dataset.urn=test.qualaroo
+extract.namespace=test
+extract.delta.fields=responseTime
+extract.table.name=responses
+extract.table.type=SNAPSHOT_APPEND
+extract.is.full=false
+extract.primary.key.fields=id
+
+ms.authentication={"method": "basic", "encryption": "base64", "header": "Authorization"}
+ms.data.field=
+ms.enable.cleansing=true
+ms.derived.fields=[{"name": "responseTime", "formula": {"type": "epoc", "source": "time", "format": "yyyy-MM-dd HH:mm:ss"}}]
+ms.http.request.method=GET
+ms.http.request.headers={"Content-Type": "application/json"}
+ms.output.schema=
+ms.pagination={"initialvalues": [0, 500]}
+ms.parameters=[{"name":"start_date","type":"watermark","watermark":"system","value":"low","format":"epoc-second"},{"name":"end_date","type":"watermark","watermark":"system","value":"high","format":"epoc-second"},{"name": "offset", "type": "pagestart"}, {"name": "limit", "type": "pagesize"}]
+ms.source.uri=https://api.qualaroo.com/api/v1.5/surveys/192889/responses.json?avro=1
+ms.session.key.field=
+ms.total.count.field=
+ms.watermark=[{"name": "system","type": "datetime", "range": {"from": "2019-01-01", "to": "-"}}]
+
+fs.uri=file://localhost/
+state.store.fs.uri=file://localhost/
+data.publisher.final.dir=/tmp/gobblin/job-output
+
+writer.destination.type=HDFS
+writer.output.format=AVRO
+
+source.conn.username=
+source.conn.password=
