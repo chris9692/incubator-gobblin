@@ -27,6 +27,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.multistage.util.VariableUtils;
 import org.apache.gobblin.source.workunit.WorkUnit;
@@ -38,7 +39,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.apache.gobblin.multistage.configuration.JobProperties.*;
+import static org.apache.gobblin.multistage.configuration.MultistageProperties.*;
 import static org.mockito.Mockito.*;
 
 
@@ -126,16 +127,6 @@ public class MultistageSource2Test extends PowerMockTestCase {
   }
 
   @Test
-  public void testGetWorkunits() {
-    initializeHelper(state);
-
-    List<WorkUnit> wuList = source.getWorkunits(state);
-    Assert.assertEquals(wuList.size(), 1);
-    WorkUnit workUnit = wuList.get(0);
-    Assert.assertEquals(workUnit.getSpecProperties().getProperty(MSTAGE_WATERMARK_GROUPS.getConfig()), "[\"watermark.system\",\"watermark.unit\"]");
-  }
-
-  @Test
   public void testInitialize() {
     initializeHelper(state);
 
@@ -179,8 +170,8 @@ public class MultistageSource2Test extends PowerMockTestCase {
     when(state.getProp(MSTAGE_SOURCE_S3_PARAMETERS.getConfig(), new JsonObject().toString())).thenReturn("{\"region\" : \"us-east-1\", \"connection_timeout\" : 10}");
     when(state.getProp(MSTAGE_SOURCE_FILES_PATTERN.getConfig(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
     when(state.getPropAsInt(MSTAGE_S3_LIST_MAX_KEYS.getConfig())).thenReturn(100);
-    when(state.getProp(SOURCE_CONN_USERNAME.getConfig(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
-    when(state.getProp(SOURCE_CONN_PASSWORD.getConfig(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
+    when(state.getProp(ConfigurationKeys.SOURCE_CONN_USERNAME, StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
+    when(state.getProp(ConfigurationKeys.SOURCE_CONN_PASSWORD, StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
     when(state.getProp(MSTAGE_EXTRACTOR_TARGET_FILE_NAME.getConfig(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
     when(state.getProp(MSTAGE_OUTPUT_SCHEMA.getConfig(), StringUtils.EMPTY)).thenReturn("");
   }

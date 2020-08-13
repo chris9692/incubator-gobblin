@@ -31,10 +31,11 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.State;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.extractor.MultistageExtractor;
 import org.apache.gobblin.multistage.keys.ExtractorKeys;
 import org.apache.gobblin.multistage.keys.SourceKeys;
@@ -74,13 +75,14 @@ public class MultistageSourceTest {
     SourceState state = mock(SourceState.class);
     when(state.getProp("ms.work.unit.partition", "")).thenReturn("daily");
     when(state.getProp("ms.pagination", new JsonObject().toString())).thenReturn("{}");
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
 
     MultistageSource source = new MultistageSource();
     source.getWorkunits(state);
 
     String expected = "daily";
-    Assert.assertEquals(expected, JobProperties.MSTAGE_WORK_UNIT_PARTITION.getProp(state));
+    Assert.assertEquals(expected, MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getProp(state));
   }
 
   @Test
@@ -88,10 +90,11 @@ public class MultistageSourceTest {
     SourceState state = mock(SourceState.class);
     when(state.getPropAsInt("ms.work.unit.pacing.seconds", 0)).thenReturn(10);
     when(state.getProp("ms.pagination", new JsonObject().toString())).thenReturn("{}");
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new MultistageSource();
     source.getWorkunits(state);
-    Assert.assertEquals(((Integer) JobProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getProp(state)).intValue(), 10);
+    Assert.assertEquals(((Integer) MultistageProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getProp(state)).intValue(), 10);
   }
 
   @Test
@@ -99,10 +102,11 @@ public class MultistageSourceTest {
     SourceState state = mock(SourceState.class);
     when(state.getPropAsInt("ms.work.unit.pacing.seconds", 0)).thenReturn(10);
     when(state.getProp("ms.pagination", new JsonObject().toString())).thenReturn("{\"fields\": [\"start\"]}");
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new MultistageSource();
     source.getWorkunits(state);
-    Assert.assertEquals(JobProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getMillis(state).longValue(), 10000L);
+    Assert.assertEquals(MultistageProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getMillis(state).longValue(), 10000L);
   }
 
   @Test
@@ -142,8 +146,8 @@ public class MultistageSourceTest {
     workUnit.setProp("watermark.unit", "NONE");
     WorkUnit workUnit1 = (WorkUnit) source.getWorkunits(state).get(0);
     Assert.assertEquals(workUnit1.getLowWatermark().toString(), workUnit.getLowWatermark().toString());
-    Assert.assertEquals(workUnit1.getProp(JobProperties.DATASET_URN_KEY.toString()), "[watermark.system.1483257600000, watermark.unit.{}]");
-    Assert.assertEquals(workUnit1.getProp(JobProperties.MSTAGE_WATERMARK_GROUPS.toString()), "[\"watermark.system\",\"watermark.unit\"]");
+    Assert.assertEquals(workUnit1.getProp(ConfigurationKeys.DATASET_URN_KEY), "[watermark.system.1483257600000, watermark.unit.{}]");
+    Assert.assertEquals(workUnit1.getProp(MultistageProperties.MSTAGE_WATERMARK_GROUPS.toString()), "[\"watermark.system\",\"watermark.unit\"]");
   }
 
   @Test
@@ -178,8 +182,8 @@ public class MultistageSourceTest {
 
     List<WorkUnit> workUnits = (List<WorkUnit>) source.getWorkunits(state);
     Assert.assertEquals(workUnits.size(), 87);
-    Assert.assertEquals(workUnits.get(0).getProp(JobProperties.DATASET_URN_KEY.toString()), "[watermark.system.1483257600000, watermark.activation.{\"id\":\"179513\"}]");
-    Assert.assertEquals(workUnits.get(0).getProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString()).toString(), "{\"id\":\"179513\"}");
+    Assert.assertEquals(workUnits.get(0).getProp(ConfigurationKeys.DATASET_URN_KEY), "[watermark.system.1483257600000, watermark.activation.{\"id\":\"179513\"}]");
+    Assert.assertEquals(workUnits.get(0).getProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString()).toString(), "{\"id\":\"179513\"}");
   }
 
   @Test
@@ -295,10 +299,10 @@ public class MultistageSourceTest {
     when(state.getPropAsInt("ms.work.unit.parallelism.max",0)).thenReturn(0);
     when(state.getProp("ms.pagination", new JsonObject().toString())).thenReturn("");
 
-    Assert.assertFalse(JobProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(state));
+    Assert.assertFalse(MultistageProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(state));
 
     when(state.getPropAsInt("ms.work.unit.parallelism.max",0)).thenReturn(10);
-    Assert.assertTrue(JobProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(state));
+    Assert.assertTrue(MultistageProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(state));
   }
 
   @Test
@@ -309,7 +313,7 @@ public class MultistageSourceTest {
     when(sourceState.getProp("extract.table.name", "")).thenReturn("table1");
     when(sourceState.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("[{\"name\": \"activityDate\", \"formula\": {\"type\": \"epoc\", \"source\": \"fromDateTime\", \"format\": \"yyyy-MM-dd'T'HH:mm:ss'Z'\"}}]");
     when(sourceState.getProp("ms.output.schema", new JsonArray().toString())).thenReturn("");
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
     MultistageSource source = new MultistageSource();
     source.getWorkunits(sourceState);
 
@@ -320,7 +324,8 @@ public class MultistageSourceTest {
   public void testOutputSchema(){
     SourceState state = mock(SourceState.class);
     when(state.getProp("ms.output.schema", new JsonArray().toString())).thenReturn("");
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new MultistageSource();
     source.getWorkunits(state);
     Assert.assertEquals(0, source.getSourceKeys().getOutputSchema().getSchema().entrySet().size());
@@ -340,7 +345,8 @@ public class MultistageSourceTest {
   @Test
   public void testSourceParameters(){
     SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new MultistageSource();
     source.getWorkunits(sourceState);
     Assert.assertNotNull(source.getSourceKeys().getSourceParameters());
@@ -453,7 +459,7 @@ public class MultistageSourceTest {
   public void testGetUpdatedWorkUnitActivation() {
     WorkUnit workUnit = Mockito.mock(WorkUnit.class);
     JsonObject authentication = gson.fromJson("{\"method\": \"basic\", \"encryption\": \"base64\", \"header\": \"Authorization\"}", JsonObject.class);
-    when(workUnit.getProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
+    when(workUnit.getProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), StringUtils.EMPTY)).thenReturn(StringUtils.EMPTY);
     Assert.assertEquals(source.getUpdatedWorkUnitActivation(workUnit, authentication), authentication.toString());
   }
 
@@ -508,23 +514,6 @@ public class MultistageSourceTest {
 
     Map<String, Long> previousHighWatermarks = new HashMap<>();
     source.generateWorkUnits(definitions, previousHighWatermarks);
-  }
-
-  @Test
-  public void testCheckFullExtractState() throws Exception {
-    State state = Mockito.mock(State.class);
-    Map map = Mockito.mock(Map.class);
-    Method method = MultistageSource.class.getDeclaredMethod("checkFullExtractState", State.class, Map.class);
-    method.setAccessible(true);
-    when(state.getProp("extract.table.type", StringUtils.EMPTY)).thenReturn("APPEND_ONLY");
-    when(map.isEmpty()).thenReturn(true);
-    Assert.assertTrue((Boolean) method.invoke(source, state, map));
-
-    when(map.isEmpty()).thenReturn(false);
-    Assert.assertFalse((Boolean) method.invoke(source, state, map));
-
-    when(state.getProp("ms.enable.dynamic.full.load", StringUtils.EMPTY)).thenReturn("true");
-    Assert.assertFalse((Boolean) method.invoke(source, state, map));
   }
 
   @Test
@@ -589,7 +578,7 @@ public class MultistageSourceTest {
     method.setAccessible(true);
 
     State state = Mockito.mock(State.class);
-    when(state.getProp(JobProperties.MSTAGE_DATA_DEFAULT_TYPE.getConfig(), new JsonObject().toString())).thenReturn("{\"testField\":100}");
+    when(state.getProp(MultistageProperties.MSTAGE_DATA_DEFAULT_TYPE.getConfig(), new JsonObject().toString())).thenReturn("{\"testField\":100}");
     Assert.assertEquals(method.invoke(source, state).toString(), "{testField=100}");
   }
 
@@ -600,7 +589,7 @@ public class MultistageSourceTest {
     method.setAccessible(true);
 
     State state = Mockito.mock(State.class);
-    when(state.getProp(JobProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
+    when(state.getProp(MultistageProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
         .thenReturn("{\"fields\": [\"offset\", \"limit\"], \"initialvalues\": [0, 5000]}");
     method.invoke(source, state);
     Map<ParameterTypes, Long> paginationInitValues = source.getSourceKeys().getPaginationInitValues();
@@ -611,14 +600,14 @@ public class MultistageSourceTest {
   @Test
   public void testGetPaginationFields() throws Exception {
     State state = Mockito.mock(State.class);
-    when(state.getProp(JobProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
+    when(state.getProp(MultistageProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
         .thenReturn("{\"fields\": [\"\", \"\"], \"initialvalues\": [0, 5000]}");
     Method method = MultistageSource.class.getDeclaredMethod("getPaginationFields", State.class);
     method.setAccessible(true);
     method.invoke(source, state);
     Assert.assertEquals(source.getSourceKeys().getPaginationInitValues().size(), 0);
 
-    when(state.getProp(JobProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
+    when(state.getProp(MultistageProperties.MSTAGE_PAGINATION.getConfig(), new JsonObject().toString()))
         .thenReturn("{\"initialvalues\": [0, 5000]}");
     method.invoke(source, state);
     Assert.assertEquals(source.getSourceKeys().getPaginationInitValues().size(), 0);

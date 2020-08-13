@@ -52,7 +52,7 @@ import org.apache.gobblin.configuration.State;
 @Slf4j
 @Getter
 @SuppressWarnings("unchecked")
-public enum JobProperties {
+public enum MultistageProperties {
   /**
    * Abstinent Period is designed to avoid re-extract a dataset repeatedly. This is particular useful
    * for situations like downloading files in large quantity.
@@ -288,8 +288,7 @@ public enum JobProperties {
     }
   },
   /**
-   * extract.preprocessors define one or more preprocessor classes, see
-   * {@link org.apache.gobblin.multistage.preprocessor.GunzipProcessor}
+   * extract.preprocessors define one or more preprocessor classes
    */
   MSTAGE_EXTRACT_PREPROCESSORS("ms.extract.preprocessors", String.class),
   /**
@@ -702,40 +701,7 @@ public enum JobProperties {
     public <T> T getDefaultValue() {
       return (T) new Long(0L);
     }
-  },
-  // Properties defined in Gobblin, redefine here to leverage the new features like validation
-  CONVERTER_CLASSES("converter.classes", String.class),
-  DATASET_URN_KEY("dataset.urn", String.class),
-  ENCRYPT_KEY_LOC("encrypt.key.loc", String.class),
-  EXTRACTOR_CLASSES("extractor.class", String.class),
-
-  // add a default value of FALSE to Gobblin configuration extract.is.full
-  EXTRACT_IS_FULL("extract.is.full", Boolean.class) {
-    public <T> T getDefaultValue() {
-      return (T) Boolean.FALSE;
-    }
-  },
-  EXTRACT_NAMESPACE_NAME_KEY("extract.namespace", String.class),
-  EXTRACT_TABLE_NAME_KEY("extract.table.name", String.class),
-  EXTRACT_TABLE_TYPE_KEY("extract.table.type", String.class) {
-    @Override
-    public <T> T getValidNonblankWithDefault(State state) {
-      return (T) ((validateNonblank(state))
-          ? ((String) getProp(state)).toUpperCase() : "SNAPSHOT_ONLY");
-    }
-  },
-  SOURCE_CLASS("source.class", String.class),
-  SOURCE_CONN_USERNAME("source.conn.username", String.class),
-  SOURCE_CONN_PASSWORD("source.conn.password", String.class),
-  SOURCE_CONN_USE_PROXY_URL("source.conn.use.proxy.url", String.class),
-  SOURCE_CONN_USE_PROXY_PORT("source.conn.use.proxy.port", String.class),
-  STATE_STORE_ENABLED("state.store.enabled", Boolean.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) Boolean.TRUE;
-    }
-  },
-  DATA_PUBLISHER_FINAL_DIR("data.publisher.final.dir", String.class);
+  };
 
   final static private Gson GSON = new Gson();
   final static private String PROPERTY_SEPARATOR = ".";
@@ -744,7 +710,7 @@ public enum JobProperties {
   private final Class<?> className;
   private final Object defaultValue;
 
-  JobProperties(String config, Class<?> className) {
+  MultistageProperties(String config, Class<?> className) {
     this.config = config;
     this.className = className;
     this.defaultValue = null;

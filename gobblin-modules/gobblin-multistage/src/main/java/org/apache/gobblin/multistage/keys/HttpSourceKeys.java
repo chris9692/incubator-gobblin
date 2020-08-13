@@ -25,7 +25,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.configuration.ConfigurationKeys;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 
 
 /**
@@ -46,14 +47,12 @@ public class HttpSourceKeys {
   private Map<String, List<Integer>> httpStatuses = null;
   private Map<String, List<String>> httpStatusReasons = null;
 
-  private List<JobProperties> essentialParameters = Lists.newArrayList(
-      JobProperties.MSTAGE_SOURCE_URI,
-      JobProperties.SOURCE_CONN_USERNAME,
-      JobProperties.SOURCE_CONN_PASSWORD,
-      JobProperties.MSTAGE_AUTHENTICATION,
-      JobProperties.MSTAGE_HTTP_REQUEST_METHOD,
-      JobProperties.MSTAGE_HTTP_REQUEST_HEADERS,
-      JobProperties.MSTAGE_SESSION_KEY_FIELD);
+  private List<MultistageProperties> essentialParameters = Lists.newArrayList(
+      MultistageProperties.MSTAGE_SOURCE_URI,
+      MultistageProperties.MSTAGE_AUTHENTICATION,
+      MultistageProperties.MSTAGE_HTTP_REQUEST_METHOD,
+      MultistageProperties.MSTAGE_HTTP_REQUEST_HEADERS,
+      MultistageProperties.MSTAGE_SESSION_KEY_FIELD);
 
   public void logDebugAll() {
     log.debug("These are values in HttpSource");

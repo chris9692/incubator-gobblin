@@ -18,8 +18,8 @@
 package org.apache.gobblin.multistage.util;
 
 import gobblin.configuration.SourceState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
-import org.apache.gobblin.multistage.util.EncryptionUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.password.PasswordManager;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
@@ -44,7 +44,7 @@ public class EncryptionUtilsTest extends PowerMockTestCase {
   public void setUp() {
     String masterKeyLoc = this.getClass().getResource("/key/master_key").toString();
     state = new SourceState();
-    state.setProp(JobProperties.ENCRYPT_KEY_LOC.toString(), masterKeyLoc);
+    state.setProp(ConfigurationKeys.ENCRYPT_KEY_LOC, masterKeyLoc);
     PowerMockito.mockStatic(PasswordManager.class);
     PowerMockito.when(PasswordManager.getInstance(state)).thenReturn(passwordManager);
   }

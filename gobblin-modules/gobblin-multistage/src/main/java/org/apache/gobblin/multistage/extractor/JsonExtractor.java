@@ -40,7 +40,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.filter.JsonSchemaBasedFilter;
 import org.apache.gobblin.multistage.keys.JsonExtractorKeys;
 import org.apache.gobblin.multistage.source.MultistageSource;
@@ -605,7 +605,7 @@ public class JsonExtractor extends MultistageExtractor<JsonArray, JsonObject> {
     JsonElement data = null;
     if (input != null) {
       data = new JsonParser().parse(new InputStreamReader(input,
-          Charset.forName(JobProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getValidNonblankWithDefault(state))));
+          Charset.forName(MultistageProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getValidNonblankWithDefault(state))));
       source.closeStream(this);
     }
     return data;

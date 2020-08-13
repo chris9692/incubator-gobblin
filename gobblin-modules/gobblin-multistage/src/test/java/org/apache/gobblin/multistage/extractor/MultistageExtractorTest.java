@@ -30,14 +30,13 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.filter.JsonSchemaBasedFilter;
 import org.apache.gobblin.multistage.keys.ExtractorKeys;
 import org.apache.gobblin.multistage.keys.SourceKeys;
-import org.apache.gobblin.multistage.preprocessor.InputStreamProcessor;
-import org.apache.gobblin.multistage.source.HttpSource;
 import org.apache.gobblin.multistage.source.MultistageSource;
 import org.apache.gobblin.multistage.util.JsonSchema;
 import org.apache.gobblin.multistage.util.WorkUnitStatus;
@@ -88,32 +87,33 @@ public class MultistageExtractorTest extends PowerMockTestCase {
     SourceState sourceState = mock(SourceState.class);
 
     when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn("{\"a\":\"x\"}");
-    Assert.assertNotNull(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getProp(state));
-    Assert.assertNotNull(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
-    Assert.assertTrue(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
-    Assert.assertTrue(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
+    Assert.assertNotNull(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getProp(state));
+    Assert.assertNotNull(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
+    Assert.assertTrue(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
+    Assert.assertTrue(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
 
     when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn("{\"a\"}");
-    Assert.assertFalse(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
-    Assert.assertFalse(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
-    Assert.assertNotNull(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
+    Assert.assertFalse(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
+    Assert.assertFalse(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
+    Assert.assertNotNull(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
 
     when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn("{}");
-    Assert.assertTrue(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
-    Assert.assertFalse(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
-    Assert.assertNotNull(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
+    Assert.assertTrue(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
+    Assert.assertFalse(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
+    Assert.assertNotNull(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
 
     when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn("");
-    Assert.assertTrue(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
-    Assert.assertFalse(JobProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
-    Assert.assertNotNull(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
+    Assert.assertTrue(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validate(state));
+    Assert.assertFalse(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.validateNonblank(state));
+    Assert.assertNotNull(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
   }
 
 
   @Test
   public void testWorkUnitWatermark(){
     SourceState state = mock(SourceState.class);
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new MultistageSource();
     List<WorkUnit> workUnits = source.getWorkunits(state);
     WorkUnitState workUnitState = new WorkUnitState(workUnits.get(0));
@@ -163,7 +163,7 @@ public class MultistageExtractorTest extends PowerMockTestCase {
     multistageExtractor.setRowFilter(schema);
 
     multistageExtractor.rowFilter = null;
-    when(state.getProp(JobProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING.getConfig(), StringUtils.EMPTY)).thenReturn("false");
+    when(state.getProp(MultistageProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING.getConfig(), StringUtils.EMPTY)).thenReturn("false");
     multistageExtractor.setRowFilter(new JsonArray());
     Assert.assertNull(multistageExtractor.rowFilter);
   }
@@ -263,7 +263,7 @@ public class MultistageExtractorTest extends PowerMockTestCase {
 
     String expected = "test_string";
     InputStream input = new ByteArrayInputStream(expected.getBytes());
-    when(state.getProp(JobProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getConfig(), StringUtils.EMPTY)).thenReturn("UTF-8");
+    when(state.getProp(MultistageProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getConfig(), StringUtils.EMPTY)).thenReturn("UTF-8");
     doNothing().when(source).closeStream(multistageExtractor);
     multistageExtractor.source = source;
     Assert.assertEquals(multistageExtractor.extractText(input), expected);

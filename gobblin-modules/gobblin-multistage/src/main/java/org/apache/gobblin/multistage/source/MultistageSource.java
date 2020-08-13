@@ -53,7 +53,7 @@ import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.State;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.extractor.MultistageExtractor;
 import org.apache.gobblin.multistage.keys.SourceKeys;
 import org.apache.gobblin.multistage.util.DateTimeUtils;
@@ -149,25 +149,25 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
   protected void initialize(State state) {
     getPaginationFields(state);
     getPaginationInitialValues(state);
-    sourceKeys.setSessionKeyField(JobProperties.MSTAGE_SESSION_KEY_FIELD.getValidNonblankWithDefault(state));
-    sourceKeys.setTotalCountField(JobProperties.MSTAGE_TOTAL_COUNT_FIELD.getValidNonblankWithDefault(state));
-    sourceKeys.setSourceParameters(JobProperties.MSTAGE_PARAMETERS.getValidNonblankWithDefault(state));
+    sourceKeys.setSessionKeyField(MultistageProperties.MSTAGE_SESSION_KEY_FIELD.getValidNonblankWithDefault(state));
+    sourceKeys.setTotalCountField(MultistageProperties.MSTAGE_TOTAL_COUNT_FIELD.getValidNonblankWithDefault(state));
+    sourceKeys.setSourceParameters(MultistageProperties.MSTAGE_PARAMETERS.getValidNonblankWithDefault(state));
     sourceKeys.setDefaultFieldTypes(getDefaultFieldTypes(state));
     sourceKeys.setOutputSchema(parseOutputSchema(state));
     sourceKeys.setDerivedFields(getDerivedFields(state));
-    sourceKeys.setEncryptionField(JobProperties.MSTAGE_ENCRYPTION_FIELDS.getValidNonblankWithDefault(state));
-    sourceKeys.setDataField(JobProperties.MSTAGE_DATA_FIELD.getValidNonblankWithDefault(state));
-    sourceKeys.setCallInterval(JobProperties.MSTAGE_CALL_INTERVAL.getProp(state));
-    sourceKeys.setSessionTimeout(JobProperties.MSTAGE_WAIT_TIMEOUT_SECONDS.getMillis(state));
-    sourceKeys.setEnableCleansing(JobProperties.MSTAGE_ENABLE_CLEANSING.getValidNonblankWithDefault(state));
-    sourceKeys.setIsPartialPartition(JobProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION.getValidNonblankWithDefault(state));
+    sourceKeys.setEncryptionField(MultistageProperties.MSTAGE_ENCRYPTION_FIELDS.getValidNonblankWithDefault(state));
+    sourceKeys.setDataField(MultistageProperties.MSTAGE_DATA_FIELD.getValidNonblankWithDefault(state));
+    sourceKeys.setCallInterval(MultistageProperties.MSTAGE_CALL_INTERVAL.getProp(state));
+    sourceKeys.setSessionTimeout(MultistageProperties.MSTAGE_WAIT_TIMEOUT_SECONDS.getMillis(state));
+    sourceKeys.setEnableCleansing(MultistageProperties.MSTAGE_ENABLE_CLEANSING.getValidNonblankWithDefault(state));
+    sourceKeys.setIsPartialPartition(MultistageProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION.getValidNonblankWithDefault(state));
     sourceKeys.setWorkUnitPartitionType(getPartitionType(state));
-    sourceKeys.setWatermarkDefinition(JobProperties.MSTAGE_WATERMARK.getValidNonblankWithDefault(state));
+    sourceKeys.setWatermarkDefinition(MultistageProperties.MSTAGE_WATERMARK.getValidNonblankWithDefault(state));
     Map<String, Long> retry = parseSecondaryInputRetry(
-        JobProperties.MSTAGE_SECONDARY_INPUT.getValidNonblankWithDefault(state));
+        MultistageProperties.MSTAGE_SECONDARY_INPUT.getValidNonblankWithDefault(state));
     sourceKeys.setRetryDelayInSec(retry.get(KEY_WORD_RETRY_DELAY_IN_SEC));
     sourceKeys.setRetryCount(retry.get(KEY_WORD_RETRY_COUNT));
-    sourceKeys.setSecondaryInputs(JobProperties.MSTAGE_SECONDARY_INPUT.getValidNonblankWithDefault(state));
+    sourceKeys.setSecondaryInputs(MultistageProperties.MSTAGE_SECONDARY_INPUT.getValidNonblankWithDefault(state));
   }
 
   /**
@@ -242,7 +242,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     List<WorkUnit> wuList = generateWorkUnits(definedWatermarks, previousHighWatermarks);
     if (authentications != null && authentications.size() == 1) {
       for (WorkUnit wu : wuList) {
-        wu.setProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString(),
+        wu.setProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString(),
             getUpdatedWorkUnitActivation(wu, authentications.get(0).getAsJsonObject()));
       }
     }
@@ -281,7 +281,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
   public Extractor getExtractor(WorkUnitState state) {
     try {
       ClassLoader loader = this.getClass().getClassLoader();
-      Class extractorClass = loader.loadClass(JobProperties.MSTAGE_EXTRACTOR_CLASS.getValidNonblankWithDefault(state));
+      Class extractorClass = loader.loadClass(MultistageProperties.MSTAGE_EXTRACTOR_CLASS.getValidNonblankWithDefault(state));
       Constructor<MultistageExtractor>
           constructor = extractorClass.getConstructor(WorkUnitState.class, MultistageSource.class);
       return constructor.newInstance(state, this);
@@ -340,7 +340,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     // cutoff time is moved backward by GRACE_PERIOD
     // cutoff time is moved forward by ABSTINENT_PERIOD
     Long cutoffTime = previousHighWatermarks.size() == 0 ? -1 : Collections.max(previousHighWatermarks.values())
-        - JobProperties.MSTAGE_GRACE_PERIOD_DAYS.getMillis(sourceState);
+        - MultistageProperties.MSTAGE_GRACE_PERIOD_DAYS.getMillis(sourceState);
     log.debug("Overall cutoff time: {}", cutoffTime);
 
     for (ImmutablePair<Long, Long> dtPartition : datetimePartitions) {
@@ -350,8 +350,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         // it reaches ms.work.unit.parallelism.max. a combination is not added if its prior
         // watermark doesn't require a rerun.
         // a work unit signature is a date time partition and unit partition combination.
-        if (JobProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(sourceState)
-            && workUnits.size() >= (Integer) JobProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.getProp(sourceState)) {
+        if (MultistageProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.validateNonblank(sourceState)
+            && workUnits.size() >= (Integer) MultistageProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX.getProp(sourceState)) {
           break;
         }
 
@@ -366,8 +366,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         Long unitCutoffTime = -1L;
         if (previousHighWatermarks.containsKey(wuSignature)) {
           unitCutoffTime = previousHighWatermarks.get(wuSignature)
-              - JobProperties.MSTAGE_GRACE_PERIOD_DAYS.getMillis(sourceState)
-              + JobProperties.MSTAGE_ABSTINENT_PERIOD_DAYS.getMillis(sourceState);
+              - MultistageProperties.MSTAGE_GRACE_PERIOD_DAYS.getMillis(sourceState)
+              + MultistageProperties.MSTAGE_ABSTINENT_PERIOD_DAYS.getMillis(sourceState);
         }
 
         // for a dated work unit partition, we only need to redo it when its previous
@@ -391,18 +391,18 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
 
           // save work unit signature for identification
           // because each dataset URN key will have a state file on Hadoop, it cannot contain path separator
-          workUnit.setProp(JobProperties.MSTAGE_WATERMARK_GROUPS.toString(),
+          workUnit.setProp(MultistageProperties.MSTAGE_WATERMARK_GROUPS.toString(),
               watermarkGroups.toString());
-          workUnit.setProp(JobProperties.DATASET_URN_KEY.toString(), getHadoopFsEncoded(wuSignature));
+          workUnit.setProp(ConfigurationKeys.DATASET_URN_KEY, getHadoopFsEncoded(wuSignature));
 
           // save the lower number of datetime watermark partition and the unit watermark partition
           workUnit.setProp(datetimeWatermarkName, dtPartition.getLeft());
           workUnit.setProp(unitWatermarkName, unitPartition);
 
-          workUnit.setProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), unitPartition);
-          workUnit.setProp(JobProperties.MSTAGE_WORKUNIT_STARTTIME_KEY.toString(),
+          workUnit.setProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), unitPartition);
+          workUnit.setProp(MultistageProperties.MSTAGE_WORKUNIT_STARTTIME_KEY.toString(),
               DateTime.now().getMillis()
-                  + workUnits.size() * JobProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getMillis(sourceState));
+                  + workUnits.size() * MultistageProperties.MSTAGE_WORK_UNIT_PACING_SECONDS.getMillis(sourceState));
           workUnits.add(workUnit);
         }
       }
@@ -420,7 +420,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     List<ImmutablePair<Long, Long>> partitions = Lists.newArrayList();
     if (sourceKeys.getWorkUnitPartitionType() != null) {
       partitions = sourceKeys.getWorkUnitPartitionType().getRanges(datetimeRange,
-          JobProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION.getValidNonblankWithDefault(sourceState));
+          MultistageProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION.getValidNonblankWithDefault(sourceState));
     } else {
       partitions.add(new ImmutablePair<>(datetimeRange.getLeft().getMillis(), datetimeRange.getRight().getMillis()));
     }
@@ -477,9 +477,9 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
 
   Extract createExtractObject(final boolean isFull) {
     Extract extract = createExtract(
-        Extract.TableType.valueOf(JobProperties.EXTRACT_TABLE_TYPE_KEY.getValidNonblankWithDefault(sourceState)),
-        JobProperties.EXTRACT_NAMESPACE_NAME_KEY.getProp(sourceState),
-        JobProperties.EXTRACT_TABLE_NAME_KEY.getProp(sourceState));
+        Extract.TableType.valueOf(sourceState.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")),
+        sourceState.getProp(ConfigurationKeys.EXTRACT_NAMESPACE_NAME_KEY),
+        sourceState.getProp(ConfigurationKeys.EXTRACT_TABLE_NAME_KEY));
     extract.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, isFull);
     return extract;
   }
@@ -500,8 +500,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         ParameterTypes.PAGESIZE,
         ParameterTypes.PAGENO
     );
-    if (JobProperties.MSTAGE_PAGINATION.validateNonblank(state)) {
-      JsonObject p = JobProperties.MSTAGE_PAGINATION.getProp(state);
+    if (MultistageProperties.MSTAGE_PAGINATION.validateNonblank(state)) {
+      JsonObject p = MultistageProperties.MSTAGE_PAGINATION.getProp(state);
       if (p.has("fields")) {
         JsonArray fields = p.get("fields").getAsJsonArray();
         for (int i = 0; i < fields.size(); i++) {
@@ -519,8 +519,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
         ParameterTypes.PAGESIZE,
         ParameterTypes.PAGENO
     );
-    if (JobProperties.MSTAGE_PAGINATION.validateNonblank(state)) {
-      JsonObject p = JobProperties.MSTAGE_PAGINATION.getProp(state);
+    if (MultistageProperties.MSTAGE_PAGINATION.validateNonblank(state)) {
+      JsonObject p = MultistageProperties.MSTAGE_PAGINATION.getProp(state);
       if (p.has("initialvalues")) {
         JsonArray values = p.get("initialvalues").getAsJsonArray();
         for (int i = 0; i < values.size(); i++) {
@@ -546,12 +546,12 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
    * @return derived fields and their definitions
    */
   private Map<String, Map<String, String>> getDerivedFields(State state) {
-    if (!JobProperties.MSTAGE_DERIVED_FIELDS.validateNonblank(state)) {
+    if (!MultistageProperties.MSTAGE_DERIVED_FIELDS.validateNonblank(state)) {
       return new HashMap<>();
     }
 
     Map<String, Map<String, String>> derivedFields = new HashMap<>();
-    JsonArray jsonArray = JobProperties.MSTAGE_DERIVED_FIELDS.getProp(state);
+    JsonArray jsonArray = MultistageProperties.MSTAGE_DERIVED_FIELDS.getProp(state);
     for (JsonElement field: jsonArray) {
 
       // change the formula part, which is JsonObject, into map
@@ -571,8 +571,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
    * @return A map of fields and their default types
    */
   private Map<String, String> getDefaultFieldTypes(State state) {
-    if (JobProperties.MSTAGE_DATA_DEFAULT_TYPE.validateNonblank(state)) {
-      return GSON.fromJson(JobProperties.MSTAGE_DATA_DEFAULT_TYPE.getProp(state).toString(),
+    if (MultistageProperties.MSTAGE_DATA_DEFAULT_TYPE.validateNonblank(state)) {
+      return GSON.fromJson(MultistageProperties.MSTAGE_DATA_DEFAULT_TYPE.getProp(state).toString(),
           new TypeToken<HashMap<String, String>>() {
           }.getType());
     }
@@ -581,8 +581,8 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
 
   public JsonSchema parseOutputSchema(State state) {
     JsonSchema outputSchema = new JsonSchema();
-    if (JobProperties.MSTAGE_OUTPUT_SCHEMA.validateNonblank(state)) {
-      JsonArray schemaArray = JobProperties.MSTAGE_OUTPUT_SCHEMA.getProp(state);
+    if (MultistageProperties.MSTAGE_OUTPUT_SCHEMA.validateNonblank(state)) {
+      JsonArray schemaArray = MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getProp(state);
       outputSchema.addMember("items", JsonUtils.deepCopy(schemaArray).getAsJsonArray());
     }
     return outputSchema;
@@ -835,7 +835,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
   protected void logUsage(State state) {
     log.info("Checking essential (not always mandatory) parameters...");
     log.info("Values can be default values for the specific type if the property is not configured");
-    for (JobProperties p: SourceKeys.ESSENTIAL_PARAMETERS) {
+    for (MultistageProperties p: SourceKeys.ESSENTIAL_PARAMETERS) {
       log.info("Property {} ({}) has value {} ", p.toString(), p.getClassName(), p.getValidNonblankWithDefault(state));
     }
   }
@@ -881,9 +881,9 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
    * @return the updated work unit configuration
    */
   protected String getUpdatedWorkUnitActivation(WorkUnit wu, JsonObject authentication) {
-    log.debug("Activation property (origin): {}", wu.getProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), ""));
-    if (!wu.getProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), StringUtils.EMPTY).isEmpty()) {
-      JsonObject existing = GSON.fromJson(wu.getProp(JobProperties.MSTAGE_ACTIVATION_PROPERTY.toString()), JsonObject.class);
+    log.debug("Activation property (origin): {}", wu.getProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), ""));
+    if (!wu.getProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString(), StringUtils.EMPTY).isEmpty()) {
+      JsonObject existing = GSON.fromJson(wu.getProp(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.toString()), JsonObject.class);
       for (Map.Entry<String, JsonElement> entry: authentication.entrySet()) {
         existing.remove(entry.getKey());
         existing.addProperty(entry.getKey(), entry.getValue().getAsString());
@@ -901,13 +901,13 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
    * @param previousHighWatermarks existing high watermarks
    * @return true if all conditions met for a full extract, otherwise false
    */
-  private boolean checkFullExtractState(final State state, final Map<String, Long> previousHighWatermarks) {
-    if (JobProperties.EXTRACT_TABLE_TYPE_KEY.getValidNonblankWithDefault(state).toString()
-        .equalsIgnoreCase(KEY_WORD_SNAPSHOT_ONLY)) {
+  boolean checkFullExtractState(final State state, final Map<String, Long> previousHighWatermarks) {
+    String extractTableType = state.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, KEY_WORD_SNAPSHOT_ONLY);
+    if (extractTableType == null || extractTableType.equalsIgnoreCase(KEY_WORD_SNAPSHOT_ONLY)) {
       return true;
     }
 
-    if (JobProperties.MSTAGE_ENABLE_DYNAMIC_FULL_LOAD.getValidNonblankWithDefault(state)) {
+    if (MultistageProperties.MSTAGE_ENABLE_DYNAMIC_FULL_LOAD.getValidNonblankWithDefault(state)) {
       if (previousHighWatermarks.isEmpty()) {
         return true;
       }
@@ -935,7 +935,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
    */
   WorkUnitPartitionTypes getPartitionType(State state) {
     WorkUnitPartitionTypes partitionType = WorkUnitPartitionTypes.fromString(
-        JobProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state));
+        MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state));
 
     if (partitionType != WorkUnitPartitionTypes.COMPOSITE) {
       return partitionType;
@@ -945,7 +945,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
     WorkUnitPartitionTypes.COMPOSITE.resetSubRange();
     try {
       JsonObject jsonObject = GSON.fromJson(
-          JobProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state).toString(),
+          MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state).toString(),
           JsonObject.class);
 
       for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
@@ -962,7 +962,7 @@ public class MultistageSource<S, D> extends AbstractSource<S, D> {
       }
     } catch (Exception e) {
       log.error("Error parsing composite partition string: "
-          + JobProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state).toString()
+          + MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getValidNonblankWithDefault(state).toString()
           + "\n partitions may not be generated properly.",
           e);
     }

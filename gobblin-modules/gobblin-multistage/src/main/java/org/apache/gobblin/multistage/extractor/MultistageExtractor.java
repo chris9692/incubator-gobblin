@@ -34,9 +34,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.State;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.filter.JsonSchemaBasedFilter;
 import org.apache.gobblin.multistage.filter.MultistageSchemaBasedFilter;
 import org.apache.gobblin.multistage.keys.ExtractorKeys;
@@ -89,9 +90,9 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
   public MultistageExtractor(WorkUnitState state, MultistageSource source) {
     this.state = state;
     this.source = source;
-    extractorKeys.setActivationParameters(JobProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
-    extractorKeys.setDelayStartTime(JobProperties.MSTAGE_WORKUNIT_STARTTIME_KEY.getProp(state));
-    extractorKeys.setSignature(JobProperties.DATASET_URN_KEY.getProp(state));
+    extractorKeys.setActivationParameters(MultistageProperties.MSTAGE_ACTIVATION_PROPERTY.getValidNonblankWithDefault(state));
+    extractorKeys.setDelayStartTime(MultistageProperties.MSTAGE_WORKUNIT_STARTTIME_KEY.getProp(state));
+    extractorKeys.setSignature(state.getProp(ConfigurationKeys.DATASET_URN_KEY));
     extractorKeys.logDebugAll(state.getWorkunit());
   }
 
@@ -163,7 +164,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
    */
   protected void setRowFilter(JsonArray schemaArray) {
     if (rowFilter == null) {
-      if (JobProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING.getValidNonblankWithDefault(state)) {
+      if (MultistageProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING.getValidNonblankWithDefault(state)) {
         rowFilter = new JsonSchemaBasedFilter(new JsonIntermediateSchema(schemaArray));
       }
     }
@@ -248,8 +249,8 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
   List<InputStreamProcessor> getPreprocessors(State state) {
     ImmutableList.Builder<InputStreamProcessor> builder = ImmutableList.builder();
     JsonObject preprocessorsParams =
-        JobProperties.MSTAGE_EXTRACT_PREPROCESSORS_PARAMETERS.getValidNonblankWithDefault(state);
-    String preprocessors = JobProperties.MSTAGE_EXTRACT_PREPROCESSORS.getValidNonblankWithDefault(state);
+        MultistageProperties.MSTAGE_EXTRACT_PREPROCESSORS_PARAMETERS.getValidNonblankWithDefault(state);
+    String preprocessors = MultistageProperties.MSTAGE_EXTRACT_PREPROCESSORS.getValidNonblankWithDefault(state);
     JsonObject preprocessorParams;
     for (String preprocessor: preprocessors.split(StringUtils.COMMA_STR)) {
       String p = preprocessor.trim();
@@ -371,7 +372,7 @@ public class MultistageExtractor<S, D> implements Extractor<S, D> {
     if (input != null) {
       try {
         data = IOUtils.toString(input,
-            Charset.forName(JobProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getValidNonblankWithDefault(state)));
+            Charset.forName(MultistageProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET.getValidNonblankWithDefault(state)));
       } catch (Exception e) {
         log.debug(e.toString());
       }

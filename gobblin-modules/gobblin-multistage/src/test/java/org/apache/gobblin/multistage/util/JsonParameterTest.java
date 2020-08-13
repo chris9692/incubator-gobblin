@@ -23,9 +23,9 @@ import com.google.gson.JsonObject;
 import gobblin.configuration.SourceState;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.State;
-import org.apache.gobblin.multistage.configuration.JobProperties;
-import org.apache.gobblin.multistage.util.JsonParameter;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -106,7 +106,7 @@ public class JsonParameterTest {
     String encrypted = "ENC(M6nV+j0lhqZ36RgvuF5TQMyNvBtXmkPl)";
     String masterKeyLoc = this.getClass().getResource("/key/master_key").toString();
     SourceState state = new SourceState();
-    state.setProp(JobProperties.ENCRYPT_KEY_LOC.toString(), masterKeyLoc);
+    state.setProp(ConfigurationKeys.ENCRYPT_KEY_LOC, masterKeyLoc);
     JsonArray jsonArray = gson.fromJson(new InputStreamReader(this.getClass().getResourceAsStream("/json/parameter-encryption.json")), JsonArray.class);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(jsonArray.toString(), new JsonObject(), state));
   }
@@ -220,23 +220,23 @@ public class JsonParameterTest {
     SourceState state = new SourceState();
 
     String expected = "{\"column\":\"createdDate\"}";
-    state.setProp(JobProperties.EXTRACT_IS_FULL.toString(), true);
+    state.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, true);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(msParameters.toString(), new JsonObject(), state));
 
     expected = "{\"column\":\"updatedDate\"}";
-    state.setProp(JobProperties.EXTRACT_IS_FULL.toString(), false);
+    state.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, false);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(msParameters.toString(), new JsonObject(), state));
 
     expected = "{\"column\":\"createdDate\"}";
-    state.setProp(JobProperties.EXTRACT_IS_FULL.toString(), false);
+    state.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, false);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(msParameters2.toString(), new JsonObject(), state));
 
     expected = "{\"column\":\"createdDate\"}";
-    state.setProp(JobProperties.EXTRACT_IS_FULL.toString(), false);
+    state.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, false);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(msParameters3.toString(), new JsonObject(), state));
 
     expected = "{\"column\":\"\"}";
-    state.setProp(JobProperties.EXTRACT_IS_FULL.toString(), false);
+    state.setProp(ConfigurationKeys.EXTRACT_IS_FULL_KEY, false);
     Assert.assertEquals(expected, JsonParameter.getParametersAsJsonString(msParameters4.toString(), new JsonObject(), state));
   }
 }

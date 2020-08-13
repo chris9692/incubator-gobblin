@@ -32,9 +32,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.keys.ExtractorKeys;
 import org.apache.gobblin.multistage.keys.JsonExtractorKeys;
 import org.apache.gobblin.multistage.keys.SourceKeys;
@@ -51,7 +52,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.apache.gobblin.multistage.configuration.JobProperties.*;
+import static org.apache.gobblin.multistage.configuration.MultistageProperties.*;
 import static org.mockito.Mockito.*;
 
 
@@ -86,7 +87,7 @@ public class JsonExtractorTest {
     when(state.getProp(MSTAGE_ACTIVATION_PROPERTY.getConfig(), new JsonObject().toString())).thenReturn(ACTIVATION_PROP);
     when(state.getPropAsLong(MSTAGE_WORKUNIT_STARTTIME_KEY.getConfig(), 0L)).thenReturn(WORKUNIT_STARTTIME_KEY);
     when(state.getWorkunit()).thenReturn(workUnit);
-    when(workUnit.getProp(JobProperties.DATASET_URN_KEY.toString())).thenReturn(DATA_SET_URN_KEY);
+    when(workUnit.getProp(ConfigurationKeys.DATASET_URN_KEY)).thenReturn(DATA_SET_URN_KEY);
     when(source.getSourceKeys()).thenReturn(sourceKeys);
     jsonExtractorKeys = Mockito.mock(JsonExtractorKeys.class);
     jsonExtractor = new JsonExtractor(state, source);
@@ -113,7 +114,7 @@ public class JsonExtractorTest {
     when(outputSchema.getSchema()).thenReturn(gson.fromJson("{\"key\":\"value\"}", JsonObject.class));
     when(jsonExtractorKeys.getCurrentPageNumber()).thenReturn(Long.valueOf(0));
     when(extractorKeys.getSessionKeyValue()).thenReturn("session_key");
-    when(workUnit.getProp(JobProperties.DATASET_URN_KEY.toString())).thenReturn("com.abc.xxxxx.UserGroups");
+    when(workUnit.getProp(ConfigurationKeys.DATASET_URN_KEY)).thenReturn("com.abc.xxxxx.UserGroups");
     Iterator jsonElementIterator = ImmutableList.of().iterator();
     when(jsonExtractorKeys.getJsonElementIterator()).thenReturn(jsonElementIterator);
     when(jsonExtractorKeys.getProcessedCount()).thenReturn(Long.valueOf(0));
@@ -195,7 +196,8 @@ public class JsonExtractorTest {
     when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("");
 
     SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new HttpSource();
     source.getWorkunits(sourceState);
 
@@ -280,7 +282,8 @@ public class JsonExtractorTest {
     when(sourceState.getProp("ms.data.field", "")).thenReturn("items");
     when(sourceState.getProp("ms.total.count.field", "")).thenReturn("totalResults");
     when(sourceState.getProp("ms.pagination", "")).thenReturn("{\"fields\": [\"offset\", \"limit\"], \"initialvalues\": [0, 5000]}");
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(ConfigurationKeys.EXTRACT_TABLE_TYPE_KEY, "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
     MultistageSource source = new HttpSource();
     source.getWorkunits(sourceState);
 
@@ -309,7 +312,7 @@ public class JsonExtractorTest {
     SourceState sourceState = mock(SourceState.class);
 
     when(sourceState.getProp("extract.table.type", "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(sourceState.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
     HttpSource source = new HttpSource();
     source.getWorkunits(sourceState);
 

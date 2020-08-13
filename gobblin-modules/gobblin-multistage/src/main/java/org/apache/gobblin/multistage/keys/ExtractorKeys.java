@@ -25,7 +25,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.configuration.ConfigurationKeys;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.util.JsonSchema;
 import org.apache.gobblin.source.workunit.WorkUnit;
 import org.joda.time.DateTime;
@@ -50,15 +51,14 @@ public class ExtractorKeys {
   private JsonSchema inferredSchema = null;
   private String sessionKeyValue;
 
-  private List<JobProperties> essentialParameters = Lists.newArrayList(
-      JobProperties.EXTRACT_TABLE_NAME_KEY,
-      JobProperties.MSTAGE_ACTIVATION_PROPERTY,
-      JobProperties.MSTAGE_PARAMETERS
+  private List<MultistageProperties> essentialParameters = Lists.newArrayList(
+      MultistageProperties.MSTAGE_ACTIVATION_PROPERTY,
+      MultistageProperties.MSTAGE_PARAMETERS
   );
 
   public void logDebugAll(WorkUnit workUnit) {
     log.debug("These are values in MultistageExtractor regarding to Work Unit: {}",
-        workUnit == null ? "testing" : workUnit.getProp(JobProperties.DATASET_URN_KEY.toString()));
+        workUnit == null ? "testing" : workUnit.getProp(ConfigurationKeys.DATASET_URN_KEY));
     log.debug("Activation parameters: {}", activationParameters);
     log.debug("Starting time: {}", startTime);
     log.debug("Signature of the work unit: {}", signature);

@@ -26,7 +26,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.joda.time.DateTime;
 
 
@@ -158,7 +158,7 @@ public enum WorkUnitPartitionTypes {
       }
     } catch (Exception e) {
       log.error("Error parsing the partition type string, please check job property: "
-          + JobProperties.MSTAGE_WORK_UNIT_PARTITION.toString(), e);
+          + MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.toString(), e);
     }
     return null;
   }

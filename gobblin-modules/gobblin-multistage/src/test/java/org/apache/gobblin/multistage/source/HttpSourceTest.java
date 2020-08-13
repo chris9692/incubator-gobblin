@@ -34,7 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.extractor.JsonExtractor;
 import org.apache.gobblin.multistage.extractor.MultistageExtractor;
 import org.apache.gobblin.multistage.keys.ExtractorKeys;
@@ -65,7 +65,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.apache.gobblin.multistage.configuration.JobProperties.*;
+import static org.apache.gobblin.multistage.configuration.MultistageProperties.*;
 import static org.apache.gobblin.multistage.source.HttpSource.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -200,7 +200,7 @@ public class HttpSourceTest extends PowerMockTestCase {
     when(state.getProp("ms.total.count.field", "")).thenReturn("records.totalRecords");
     when(state.getProp("ms.work.unit.partition", "")).thenReturn("");
     when(state.getProp("ms.pagination", new JsonObject().toString())).thenReturn("{}");
-    when(state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
+    when(state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
     List<WorkUnit> workUnits = source.getWorkunits(state);
     WorkUnitState unitState = new WorkUnitState(workUnits.get(0));
 

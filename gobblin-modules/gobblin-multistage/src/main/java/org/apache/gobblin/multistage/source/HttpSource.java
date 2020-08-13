@@ -42,10 +42,11 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.SourceState;
 import org.apache.gobblin.configuration.State;
 import org.apache.gobblin.configuration.WorkUnitState;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.extractor.MultistageExtractor;
 import org.apache.gobblin.multistage.factory.HttpClientFactory;
 import org.apache.gobblin.multistage.keys.HttpSourceKeys;
@@ -92,9 +93,9 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
     super.initialize(state);
     httpClient = getHttpClient(state);
     httpSourceKeys.setHttpRequestHeaders(getRequestHeader(state));
-    httpSourceKeys.setHttpSourceUri(JobProperties.MSTAGE_SOURCE_URI.getProp(state));
-    httpSourceKeys.setHttpRequestMethod(JobProperties.MSTAGE_HTTP_REQUEST_METHOD.getProp(state));
-    httpSourceKeys.setAuthentication(JobProperties.MSTAGE_AUTHENTICATION.getValidNonblankWithDefault(state));
+    httpSourceKeys.setHttpSourceUri(MultistageProperties.MSTAGE_SOURCE_URI.getProp(state));
+    httpSourceKeys.setHttpRequestMethod(MultistageProperties.MSTAGE_HTTP_REQUEST_METHOD.getProp(state));
+    httpSourceKeys.setAuthentication(MultistageProperties.MSTAGE_AUTHENTICATION.getValidNonblankWithDefault(state));
     httpSourceKeys.setHttpRequestHeadersWithAuthentication(getHeadersWithAuthentication(state));
     httpSourceKeys.setHttpStatuses(getHttpStatuses(state));
     httpSourceKeys.setHttpStatusReasons(getHttpStatusReasons(state));
@@ -161,7 +162,7 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
     if (httpClient == null) {
       try {
         Class factoryClass = Class.forName(
-            JobProperties.MSTAGE_HTTP_CLIENT_FACTORY.getValidNonblankWithDefault(state));
+            MultistageProperties.MSTAGE_HTTP_CLIENT_FACTORY.getValidNonblankWithDefault(state));
         HttpClientFactory factory = (HttpClientFactory) factoryClass.newInstance();
         httpClient = factory.get(state);
       } catch (Exception e) {
@@ -199,8 +200,8 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
     if (httpSourceKeys.getAuthentication().has("token")) {
       token = EncryptionUtils.decryptGobblin(httpSourceKeys.getAuthentication().get("token").getAsString(), state);
     } else {
-      String u = EncryptionUtils.decryptGobblin(JobProperties.SOURCE_CONN_USERNAME.getProp(state), state);
-      String p = EncryptionUtils.decryptGobblin(JobProperties.SOURCE_CONN_PASSWORD.getProp(state), state);
+      String u = EncryptionUtils.decryptGobblin(state.getProp(ConfigurationKeys.SOURCE_CONN_USERNAME, ""), state);
+      String p = EncryptionUtils.decryptGobblin(state.getProp(ConfigurationKeys.SOURCE_CONN_PASSWORD, ""), state);
       token = u + ":" + p;
     }
 
@@ -396,8 +397,8 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
   @Override
   protected void logUsage(State state) {
     super.logUsage(state);
-    List<JobProperties> list = httpSourceKeys.getEssentialParameters();
-    for (JobProperties p: list) {
+    List<MultistageProperties> list = httpSourceKeys.getEssentialParameters();
+    for (MultistageProperties p: list) {
       log.info("Property {} ({}) has value {} ", p.toString(), p.getClassName(), p.getValidNonblankWithDefault(state));
     }
     httpSourceKeys.logDebugAll();
@@ -405,7 +406,7 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
 
   private Map<String, List<Integer>> getHttpStatuses(State state) {
     Map<String, List<Integer>> statuses = new HashMap<>();
-    JsonObject jsonObject = JobProperties.MSTAGE_HTTP_STATUSES.getValidNonblankWithDefault(state);
+    JsonObject jsonObject = MultistageProperties.MSTAGE_HTTP_STATUSES.getValidNonblankWithDefault(state);
     for (Map.Entry<String, JsonElement> entry: jsonObject.entrySet()) {
       String key = entry.getKey();
       JsonElement value = jsonObject.get(key);
@@ -418,7 +419,7 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
 
   private Map<String, List<String>> getHttpStatusReasons(State state) {
     Map<String, List<String>> reasons = new HashMap<>();
-    JsonObject jsonObject = JobProperties.MSTAGE_HTTP_STATUS_REASONS.getValidNonblankWithDefault(state);
+    JsonObject jsonObject = MultistageProperties.MSTAGE_HTTP_STATUS_REASONS.getValidNonblankWithDefault(state);
     for (Map.Entry<String, JsonElement> entry: jsonObject.entrySet()) {
       String key = entry.getKey();
       JsonElement value = jsonObject.get(key);
@@ -435,7 +436,7 @@ public class HttpSource extends MultistageSource<Schema, GenericRecord> {
    * @return the decrypted http request headers
    */
   private JsonObject getRequestHeader(State state) {
-    JsonObject headers = JobProperties.MSTAGE_HTTP_REQUEST_HEADERS.getValidNonblankWithDefault(state);
+    JsonObject headers = MultistageProperties.MSTAGE_HTTP_REQUEST_HEADERS.getValidNonblankWithDefault(state);
     JsonObject decrypted = new JsonObject();
     for (Map.Entry<String, JsonElement> entry: headers.entrySet()) {
       String key = entry.getKey();

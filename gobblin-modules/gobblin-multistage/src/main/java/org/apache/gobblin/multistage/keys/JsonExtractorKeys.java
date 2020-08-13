@@ -26,7 +26,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.configuration.ConfigurationKeys;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.source.workunit.WorkUnit;
 
 
@@ -45,13 +46,13 @@ public class JsonExtractorKeys {
   private long currentPageNumber = 0;
   private JsonObject pushDowns;
 
-  private List<JobProperties> essentialParameters = Lists.newArrayList(
-      JobProperties.MSTAGE_DATA_FIELD,
-      JobProperties.MSTAGE_TOTAL_COUNT_FIELD);
+  private List<MultistageProperties> essentialParameters = Lists.newArrayList(
+      MultistageProperties.MSTAGE_DATA_FIELD,
+      MultistageProperties.MSTAGE_TOTAL_COUNT_FIELD);
 
   public void logDebugAll(WorkUnit workUnit) {
     log.debug("These are values of JsonExtractor regarding to Work Unit: {}",
-        workUnit == null ? "testing" : workUnit.getProp(JobProperties.DATASET_URN_KEY.toString()));
+        workUnit == null ? "testing" : workUnit.getProp(ConfigurationKeys.DATASET_URN_KEY));
     log.debug("Total rows expected or processed: {}", totalCount);
     log.debug("Total rows processed: {}", processedCount);
   }

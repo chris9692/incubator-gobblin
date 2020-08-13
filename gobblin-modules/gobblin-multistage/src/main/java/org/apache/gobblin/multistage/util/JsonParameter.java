@@ -25,8 +25,9 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.gobblin.configuration.ConfigurationKeys;
 import org.apache.gobblin.configuration.State;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -383,7 +384,7 @@ public class JsonParameter {
     if (listValue.isJsonPrimitive()) {
       listValueString = listValue.getAsString();
     } else if (listValue.isJsonArray() && listValue.getAsJsonArray().size() > 0) {
-      if (JobProperties.EXTRACT_IS_FULL.getValidNonblankWithDefault(state)) {
+      if (state.getPropAsBoolean(ConfigurationKeys.EXTRACT_IS_FULL_KEY, Boolean.FALSE)) {
         listValueString = listValue.getAsJsonArray().get(0).getAsString();
       } else {
         listValueString = listValue.getAsJsonArray().size() > 1

@@ -25,7 +25,7 @@ import gobblin.configuration.SourceState;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.source.MultistageSource;
 import org.apache.gobblin.multistage.util.JsonSchema;
 import org.apache.gobblin.multistage.util.JsonUtils;
@@ -133,29 +133,29 @@ public class SourceKeysTest extends PowerMockTestCase {
     Assert.assertTrue(sourceKeys.validate(state));
 
     // test output schema validation with a wrong type
-    state.setProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "{}");
+    state.setProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "{}");
     Assert.assertFalse(sourceKeys.validate(state));
 
     // test output schema validation with an empty array
-    state.setProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "[{}]");
+    state.setProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "[{}]");
     Assert.assertFalse(sourceKeys.validate(state));
 
     // test output schema validation with an incorrect structure
     String schema = "[{\"columnName\":\"test\",\"isNullable\":\"true\",\"dataType\":{\"type\":\"string\"}]";
-    state.setProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), schema);
+    state.setProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), schema);
     sourceKeys.setOutputSchema(new MultistageSource<>().parseOutputSchema(state));
     Assert.assertFalse(sourceKeys.validate(state));
 
     schema = "[{\"columnName\":\"test\",\"isNullable\":\"true\",\"dataType\":{\"type\":\"string\"}}]";
-    state.setProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), schema);
+    state.setProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), schema);
     sourceKeys.setOutputSchema(new MultistageSource<>().parseOutputSchema(state));
     Assert.assertTrue(sourceKeys.validate(state));
 
-    state.setProp(JobProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig(), "lovely");
+    state.setProp(MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig(), "lovely");
     sourceKeys.setWorkUnitPartitionType(null);
     Assert.assertFalse(sourceKeys.validate(state));
 
-    state.setProp(JobProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig(), "{\"weekly\": [\"2020-01-01\", \"2020-02-1\"]}");
+    state.setProp(MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig(), "{\"weekly\": [\"2020-01-01\", \"2020-02-1\"]}");
     sourceKeys.setWorkUnitPartitionType(WorkUnitPartitionTypes.COMPOSITE);
     Assert.assertFalse(sourceKeys.validate(state));
   }

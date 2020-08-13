@@ -30,7 +30,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.gobblin.configuration.State;
-import org.apache.gobblin.multistage.configuration.JobProperties;
+import org.apache.gobblin.multistage.configuration.MultistageProperties;
 import org.apache.gobblin.multistage.util.JsonSchema;
 import org.apache.gobblin.multistage.util.JsonUtils;
 import org.apache.gobblin.multistage.util.ParameterTypes;
@@ -51,34 +51,29 @@ import org.joda.time.DateTime;
 @Setter(AccessLevel.PUBLIC)
 public class SourceKeys {
   final static public Gson GSON = new Gson();
-  final static public List<JobProperties> ESSENTIAL_PARAMETERS = Lists.newArrayList(
-      JobProperties.SOURCE_CLASS,
-      JobProperties.EXTRACTOR_CLASSES,
-      JobProperties.CONVERTER_CLASSES,
-      JobProperties.EXTRACT_TABLE_TYPE_KEY,
-      JobProperties.STATE_STORE_ENABLED,
-      JobProperties.MSTAGE_ABSTINENT_PERIOD_DAYS,
-      JobProperties.MSTAGE_DERIVED_FIELDS,
-      JobProperties.MSTAGE_ENABLE_CLEANSING,
-      JobProperties.MSTAGE_ENABLE_DYNAMIC_FULL_LOAD,
-      JobProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING,
-      JobProperties.MSTAGE_ENCODING,
-      JobProperties.MSTAGE_ENCRYPTION_FIELDS,
-      JobProperties.MSTAGE_GRACE_PERIOD_DAYS,
-      JobProperties.MSTAGE_OUTPUT_SCHEMA,
-      JobProperties.MSTAGE_PAGINATION,
-      JobProperties.MSTAGE_PARAMETERS,
-      JobProperties.MSTAGE_RETENTION,
-      JobProperties.MSTAGE_SECONDARY_INPUT,
-      JobProperties.MSTAGE_SESSION_KEY_FIELD,
-      JobProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET,
-      JobProperties.MSTAGE_SOURCE_URI,
-      JobProperties.MSTAGE_TOTAL_COUNT_FIELD,
-      JobProperties.MSTAGE_WAIT_TIMEOUT_SECONDS,
-      JobProperties.MSTAGE_WORK_UNIT_PACING_SECONDS,
-      JobProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX,
-      JobProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION,
-      JobProperties.MSTAGE_WATERMARK);
+  final static public List<MultistageProperties> ESSENTIAL_PARAMETERS = Lists.newArrayList(
+      MultistageProperties.MSTAGE_ABSTINENT_PERIOD_DAYS,
+      MultistageProperties.MSTAGE_DERIVED_FIELDS,
+      MultistageProperties.MSTAGE_ENABLE_CLEANSING,
+      MultistageProperties.MSTAGE_ENABLE_DYNAMIC_FULL_LOAD,
+      MultistageProperties.MSTAGE_ENABLE_SCHEMA_BASED_FILTERING,
+      MultistageProperties.MSTAGE_ENCODING,
+      MultistageProperties.MSTAGE_ENCRYPTION_FIELDS,
+      MultistageProperties.MSTAGE_GRACE_PERIOD_DAYS,
+      MultistageProperties.MSTAGE_OUTPUT_SCHEMA,
+      MultistageProperties.MSTAGE_PAGINATION,
+      MultistageProperties.MSTAGE_PARAMETERS,
+      MultistageProperties.MSTAGE_RETENTION,
+      MultistageProperties.MSTAGE_SECONDARY_INPUT,
+      MultistageProperties.MSTAGE_SESSION_KEY_FIELD,
+      MultistageProperties.MSTAGE_SOURCE_DATA_CHARACTER_SET,
+      MultistageProperties.MSTAGE_SOURCE_URI,
+      MultistageProperties.MSTAGE_TOTAL_COUNT_FIELD,
+      MultistageProperties.MSTAGE_WAIT_TIMEOUT_SECONDS,
+      MultistageProperties.MSTAGE_WORK_UNIT_PACING_SECONDS,
+      MultistageProperties.MSTAGE_WORK_UNIT_PARALLELISM_MAX,
+      MultistageProperties.MSTAGE_WORK_UNIT_PARTIAL_PARTITION,
+      MultistageProperties.MSTAGE_WATERMARK);
 
   private Map<String, Map<String, String>> derivedFields = new HashMap<>();
   private Map<String, String> defaultFieldTypes = new HashMap<>();
@@ -183,7 +178,7 @@ public class SourceKeys {
      * It is OK if output schema is intentionally left blank.
      */
     if (!hasOutputSchema()) {
-      if (!state.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), StringUtils.EMPTY).isEmpty()) {
+      if (!state.getProp(MultistageProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), StringUtils.EMPTY).isEmpty()) {
         log.error("Output schema is specified but it is an invalid or empty JsonArray");
         return false;
       }
@@ -193,7 +188,7 @@ public class SourceKeys {
      * Check if partitioning property is correct
      */
     if (getWorkUnitPartitionType() == null) {
-      String partTypeString = state.getProp(JobProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig());
+      String partTypeString = state.getProp(MultistageProperties.MSTAGE_WORK_UNIT_PARTITION.getConfig());
       if (!StringUtils.isBlank(partTypeString)) {
         log.error("ms.work.unit.partition has a unaccepted value: {}", partTypeString);
         return false;
