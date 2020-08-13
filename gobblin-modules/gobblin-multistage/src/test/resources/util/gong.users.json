@@ -1,21 +1,21 @@
 {
   "requestId" : "4zjuhkoiwzsasq7p7zi",
   "records" : {
-    "totalRecords" : 12888,
+    "totalRecords" : 1,
     "currentPageSize" : 100,
     "currentPageNumber" : 0,
     "cursor" : "UF9yDX4Wwizk2v20"
   },
   "users" : [ {
-    "id" : "1516921356387174",
-    "emailAddress" : "xxx@linkedin.com",
+    "id" : "11111",
+    "emailAddress" : "xxx@abc.com",
     "created" : "2018-02-12T13:06:53.735-08:00",
     "active" : false,
-    "emailAliases" : [ "skaleem@linkedin.biz" ],
-    "firstName" : "Sophia",
-    "lastName" : "Kaleem",
+    "emailAliases" : [ "yyy@abc.biz" ],
+    "firstName" : "chris",
+    "lastName" : "chris",
     "title" : "Sr. Sales Process Analyst",
-    "phoneNumber" : "408-594-xxxx",
+    "phoneNumber" : "408-999-9999",
     "extension" : null,
     "personalMeetingUrls" : [ ],
     "settings" : {
@@ -25,28 +25,7 @@
       "emailsImported" : false,
       "preventEmailImport" : false
     },
-    "managerId" : "4050940306263710555",
-    "meetingConsentPageUrl" : null
-  }, {
-    "id" : "1710642184750047",
-    "emailAddress" : "xxx@linkedin.com",
-    "created" : "2018-10-10T03:18:52.945-07:00",
-    "active" : true,
-    "emailAliases" : [ "xxxx@linkedin.com", "xxxx@linkedin.com" ],
-    "firstName" : "Maarten",
-    "lastName" : "van den Broek",
-    "title" : "Hybrid Account Executive",
-    "phoneNumber" : null,
-    "extension" : null,
-    "personalMeetingUrls" : [ ],
-    "settings" : {
-      "webConferencesRecorded" : false,
-      "preventWebConferenceRecording" : true,
-      "telephonyCallsImported" : false,
-      "emailsImported" : false,
-      "preventEmailImport" : false
-    },
-    "managerId" : "1316467053011380479",
+    "managerId" : "99999999",
     "meetingConsentPageUrl" : null
   }]
 }

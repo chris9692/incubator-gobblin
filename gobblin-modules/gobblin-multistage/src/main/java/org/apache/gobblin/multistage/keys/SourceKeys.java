@@ -65,7 +65,6 @@ public class SourceKeys {
       JobProperties.MSTAGE_ENCODING,
       JobProperties.MSTAGE_ENCRYPTION_FIELDS,
       JobProperties.MSTAGE_GRACE_PERIOD_DAYS,
-      JobProperties.MSTAGE_KRAKEN_ENABLED,
       JobProperties.MSTAGE_OUTPUT_SCHEMA,
       JobProperties.MSTAGE_PAGINATION,
       JobProperties.MSTAGE_PARAMETERS,

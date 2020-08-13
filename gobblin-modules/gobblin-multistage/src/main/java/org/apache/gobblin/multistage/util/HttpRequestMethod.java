@@ -21,6 +21,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.squareup.okhttp.HttpUrl;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -196,13 +198,18 @@ public enum HttpRequestMethod {
     return VariableUtils.replaceWithTracking(uriTemplate, parameters, true);
   }
 
-  protected String appendParameters(String uri, JsonObject parameters) {
+  protected String appendParameters(String uri, JsonObject parameters) throws UnsupportedEncodingException {
+    if (uri == null) {
+      return uri;
+    }
+
     HttpUrl url = HttpUrl.parse(uri);
     if (url != null) {
       HttpUrl.Builder builder = url.newBuilder();
       for (Map.Entry<String, JsonElement> entry : parameters.entrySet()) {
         String key = entry.getKey();
-        builder.addQueryParameter(key, parameters.get(key).getAsString());
+        builder.addEncodedQueryParameter(key,
+            URLEncoder.encode(parameters.get(key).getAsString(), StandardCharsets.UTF_8.toString()));
       }
       url = builder.build();
     }

@@ -80,7 +80,6 @@
       }
     }
   ],
-  "ms.http.client.factory": "org.apache.gobblin.multistage.factory.GaapHttpClientFactory",
   "ms.http.request.headers": {
     "Content-Type": "application/json",
     "key": "adwpsdfsftcc9cj749fnb8xxsdfsn"

@@ -318,18 +318,6 @@ public enum JobProperties {
           ? ((String) getProp(state)).toUpperCase() : "755");
     }
   },
-  MSTAGE_GAAP_READ_TIMEOUT_MILLIS("ms.gaap.read.timeout.millis", Integer.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) new Integer(3600000);
-    }
-  },
-  MSTAGE_GAAP_RETRIES("ms.gaap.retries", Integer.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) new Integer(3);
-    }
-  },
   /**
    * Grace Period is for overlapped data extraction, it assumes that the source can have late comers,
    * which are older data that showed up in source after last extract. For example, a record was modified
@@ -349,13 +337,13 @@ public enum JobProperties {
   },
   /**
    * http.client.factory define an indirect way to specify the type of HttpClient to use.
-   * default = {@link org.apache.gobblin.multistage.factory.GaapHttpClientFactory}
+   * default = {@link org.apache.gobblin.multistage.factory.ApacheHttpClientFactory}
    * local testing = {@link org.apache.gobblin.multistage.factory.ApacheHttpClientFactory}
    */
   MSTAGE_HTTP_CLIENT_FACTORY("ms.http.client.factory", String.class) {
     @Override
     public <T> T getDefaultValue() {
-      return (T) "org.apache.gobblin.org.apache.gobblin.multistage.factory.GaapHttpClientFactory";
+      return (T) "org.apache.gobblin.multistage.factory.ApacheHttpClientFactory";
     }
   },
   /**
@@ -404,14 +392,6 @@ public enum JobProperties {
    * of the statement. The source database decides whether to accept or fail the statement.
    */
   MSTAGE_JDBC_STATEMENT("ms.jdbc.statement", String.class),
-  /**
-   * use gaap. The connections/clients/requests would be set up proxy
-   */
-  MSTAGE_KRAKEN_ENABLED("ms.kraken.enabled", Boolean.class) {
-    public <T> T getDefaultValue() {
-      return (T) Boolean.FALSE;
-    }
-  },
   MSTAGE_OUTPUT_SCHEMA("ms.output.schema", JsonArray.class),
   /**
    * pagination is a Json object with 2 members:
@@ -594,8 +574,8 @@ public enum JobProperties {
    *
    * source.uri also accepts variables that allow substitution in runtime
    * Examples:
-   *   ms.source.uri=https://secure.p01.eloqua.com/api/bulk/2.0/syncs/{{synid}}
-   *   ms.source.uri=jdbc:mysql://odbcva01.rightnowtech.com:3630/linkedin?useSSL=true
+   *   ms.source.uri=https://abc.com/api/bulk/2.0/syncs/{{synid}}
+   *   ms.source.uri=jdbc:mysql://abc.com:3630/abc?useSSL=true
    *   ms.source.uri=https://commoncrawl.s3.amazonaws.com/{{s3key}}
    *
    * TODO SFTP protocol to support URI format

@@ -41,9 +41,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static org.powermock.api.mockito.PowerMockito.*;
-
-
 /**
  * Unit test for {@link HttpRequestMethod}
  * @author chrli
@@ -94,8 +91,8 @@ public class HttpRequestMethodTest extends PowerMockTestCase {
             URLEncoder.encode(TO_DATETIME, StandardCharsets.UTF_8.toString())),
         HTTP_POST_FIX);
     parameters = generateParameterString(FROM_DATETIME, TO_DATETIME, VERSION_2);
-    HttpUriRequest
-        getRequest = HttpRequestMethod.GET.getHttpRequest(String.format(BASE_URI, "{{version}}"), parameters, headers);
+    HttpUriRequest getRequest = HttpRequestMethod.GET.getHttpRequest(
+        String.format(BASE_URI, "{{version}}"), parameters, headers);
     Assert.assertEquals(getRequest.toString(), expected);
 
     addContentType();
@@ -157,28 +154,11 @@ public class HttpRequestMethodTest extends PowerMockTestCase {
   }
 
   /**
-   * Test getHttpRequest
-   */
-  @Test
-  public void testGetHttpRequest() throws IOException {
-    PowerMockito.mockStatic(VariableUtils.class);
-    String uri = String.format(BASE_URI, VERSION_2);
-    Map<String, String> headers = ImmutableMap.of(CONTENT_TYPE, CONTENT_TYPE_VALUE);
-    String expected = String.format("%s %s %s", "POST", uri, HTTP_POST_FIX);
-    JsonObject parameters = HttpRequestMethodTest.generateParameterString(FROM_DATETIME, TO_DATETIME, "");
-    when(VariableUtils.replaceWithTracking(uri, parameters, true)).thenReturn(new ImmutablePair<>(uri, parameters));
-    when(VariableUtils.replaceWithTracking(headers.get(CONTENT_TYPE), parameters)).thenReturn(new ImmutablePair<>(CONTENT_TYPE, parameters));
-    Assert.assertEquals(HttpRequestMethod.POST.getHttpRequest(String.format(BASE_URI, VERSION_2), parameters, headers).toString(), expected);
-  }
-
-  /**
    * Test appendParameters with null uri
    * Expected: null
    */
   @Test
-  public void testAppendParametersWithNullUri() {
-    PowerMockito.mockStatic(HttpUrl.class);
-    when(HttpUrl.parse(null)).thenReturn(null);
+  public void testAppendParametersWithNullUri() throws UnsupportedEncodingException {
     Assert.assertEquals(HttpRequestMethod.PUT.appendParameters(null, null), null);
   }
 

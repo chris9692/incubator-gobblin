@@ -1,16 +1,16 @@
 job.name=testJob
 
-source.class=org.apache.gobblin.org.apache.gobblin.multistage.source.HttpSource
+source.class=org.apache.gobblin.multistage.source.HttpSource
 converter.classes=org.apache.gobblin.converter.avro.JsonIntermediateToAvroConverter
 
-ms.extractor.class=org.apache.gobblin.org.apache.gobblin.multistage.extractor.JsonExtractor
-ms.http.client.factory=org.apache.gobblin.org.apache.gobblin.multistage.factory.ApacheHttpClientFactory
+ms.extractor.class=org.apache.gobblin.multistage.extractor.JsonExtractor
+ms.http.client.factory=org.apache.gobblin.multistage.factory.ApacheHttpClientFactory
 
 extract.namespace=test
-extract.table.name=mindtickle
+extract.table.name=REPLACEME
 extract.table.type=SNAPSHOT_ONLY
 extract.is.full=true
-dataset.urn=test.mindtickle
+dataset.urn=test.table
 
 ms.authentication={"method": "basic", "encryption": "base64", "header": "Authorization"}
 ms.data.field=results
@@ -19,9 +19,9 @@ ms.http.request.headers={"Content-Type": "application/json"}
 ms.watermark=[{"name": "system","type": "datetime", "range": {"from": "2020-01-01", "to": "2020-01-31"}}]
 ms.output.schema=
 ms.parameters=[{"name": "$format", "type": "list", "value": "json"}]
-ms.source.uri=https://admin.mindtickle.com/Odata.svc/LearnerModulePerformances
+ms.source.uri=
 ms.session.key.field=
-ms.total.count.field=__count
+ms.total.count.field=
 
 fs.uri=file://localhost/
 state.store.fs.uri=file://localhost/

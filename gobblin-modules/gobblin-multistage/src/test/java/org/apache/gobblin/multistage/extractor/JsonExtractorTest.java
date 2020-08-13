@@ -60,7 +60,7 @@ public class JsonExtractorTest {
 
   // Matches to the total count field in the response json
   private static final int TOTAL_COUNT = 2741497;
-  private final static String DATA_SET_URN_KEY = "com.linkedin.mindtickle.SeriesCollection";
+  private final static String DATA_SET_URN_KEY = "SeriesCollection";
   private final static String ACTIVATION_PROP = "{\"name\": \"survey\", \"type\": \"unit\", \"units\": \"id1,id2\"}";
   private final static long WORKUNIT_STARTTIME_KEY = 1590994800000L;
 
@@ -113,7 +113,7 @@ public class JsonExtractorTest {
     when(outputSchema.getSchema()).thenReturn(gson.fromJson("{\"key\":\"value\"}", JsonObject.class));
     when(jsonExtractorKeys.getCurrentPageNumber()).thenReturn(Long.valueOf(0));
     when(extractorKeys.getSessionKeyValue()).thenReturn("session_key");
-    when(workUnit.getProp(JobProperties.DATASET_URN_KEY.toString())).thenReturn("com.linkedin.xxxxx.UserGroups");
+    when(workUnit.getProp(JobProperties.DATASET_URN_KEY.toString())).thenReturn("com.abc.xxxxx.UserGroups");
     Iterator jsonElementIterator = ImmutableList.of().iterator();
     when(jsonExtractorKeys.getJsonElementIterator()).thenReturn(jsonElementIterator);
     when(jsonExtractorKeys.getProcessedCount()).thenReturn(Long.valueOf(0));
@@ -195,9 +195,6 @@ public class JsonExtractorTest {
     when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("");
 
     SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("lva1-gaap-proxy-vip-2.prod.linkedin.com");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
     when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
     MultistageSource source = new HttpSource();
     source.getWorkunits(sourceState);
@@ -218,7 +215,7 @@ public class JsonExtractorTest {
    * And in each row, the first element "keys" is a JsonArray of 4 elements
    *
    * Input  1: JsonPath = keys.1
-   * Output 1: linkedin
+   * Output 1: abc
    *
    * Input  2: JsonPath = keys.3
    * Output 2: 2020-04-20
@@ -234,7 +231,7 @@ public class JsonExtractorTest {
     JsonExtractor extractor = new JsonExtractor(state, source);
 
     JsonObject row = jsonData.get("rows").getAsJsonArray().get(0).getAsJsonObject();
-    Assert.assertEquals(extractor.getElementByJsonPath(row, "keys.1").getAsString(), "linkedin");
+    Assert.assertEquals(extractor.getElementByJsonPath(row, "keys.1").getAsString(), "abc");
     Assert.assertEquals(extractor.getElementByJsonPath(row, "keys.3").getAsString(), "2020-04-20");
 
     String strValue = "";
@@ -266,102 +263,6 @@ public class JsonExtractorTest {
     Assert.assertEquals(jsonExtractor.getElementByJsonPath(row, jsonPath), JsonNull.INSTANCE);
   }
 
-  @Test
-  void testInferredSchema() {
-    WorkUnitState state = new WorkUnitState();
-
-    String masterKeyLoc = this.getClass().getResource("/key/master_key").toString();
-    state.setProp(JobProperties.ENCRYPT_KEY_LOC.toString(), masterKeyLoc);
-
-    InputStream inputStream = getClass().getResourceAsStream("/util/gong.users.json");
-    WorkUnitStatus status = WorkUnitStatus.builder().buffer(inputStream).build();
-    status.setTotalCount(TOTAL_COUNT);
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("[{\"name\": \"snapshotDate\", \"formula\": {\"type\": \"epoc\", \"source\": \"CURRENTDATE\"}}]");
-    when(sourceState.getProp("ms.session.key.field", new JsonObject().toString())).thenReturn("{\"name\": \"records.cursor\"}");
-    when(sourceState.getProp("ms.encryption.fields", new JsonArray().toString())).thenReturn("[\"settings.webConferencesRecorded\", \"emailAddress\"]");
-    when(sourceState.getProp("ms.total.count.field", "")).thenReturn("records.totalRecords");
-    when(sourceState.getProp("ms.data.field", "")).thenReturn("users");
-    when(sourceState.getProp("extract.table.type", "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("lva1-gaap-proxy-vip-2.prod.linkedin.com");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageSource mockSource = mock(HttpSource.class);
-    JsonExtractor extractor = new JsonExtractor(state, mockSource);
-    extractor.jsonExtractorKeys.setTotalCount(TOTAL_COUNT);
-
-    when(mockSource.getFirst(extractor)).thenReturn(status);
-    doNothing().when(mockSource).closeStream(extractor);
-    when(mockSource.getSourceKeys()).thenReturn(source.getSourceKeys());
-
-    Assert.assertEquals(extractor.getSchema().size(), 15);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getTotalCount(), 12888);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getSessionKey(), "UF9yDX4Wwizk2v20");
-    Assert.assertEquals(extractor.readRecord(new JsonObject()).getAsJsonObject().get("id").getAsString(), "1516921356387174");
-    Assert.assertEquals(extractor.source.getSourceKeys().getDerivedFields().toString(), "{snapshotDate={source=CURRENTDATE, type=epoc}}");
-  }
-
-  /**
-   * Test inferring schema with 1 single JsonObject row
-   */
-  @Test
-  void testInferredSchema2() {
-    WorkUnitState state = mock(WorkUnitState.class);
-    InputStream inputStream = getClass().getResourceAsStream("/json/eloqua-sync-creation.json");
-    WorkUnitStatus status = WorkUnitStatus.builder().buffer(inputStream).build();
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("[{\"name\": \"syncid\", \"formula\": {\"type\": \"regexp\", \"source\": \"uri\", \"format\": \"/syncs/([0-9]+)$\"}}]");
-    when(sourceState.getProp("extract.table.type", "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageSource mockSource = mock(HttpSource.class);
-    JsonExtractor extractor = new JsonExtractor(state, mockSource);
-
-    when(mockSource.getFirst(extractor)).thenReturn(status);
-    doNothing().when(mockSource).closeStream(extractor);
-    when(mockSource.getSourceKeys()).thenReturn(source.getSourceKeys());
-
-    Assert.assertEquals(extractor.getSchema().size(), 6);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getTotalCount(), 1);
-    Assert.assertEquals(extractor.readRecord(new JsonObject()).getAsJsonObject().get("createdBy").getAsString(), "DWH.RestIntegration");
-  }
-
-  /**
-   * Test Extractor shall stop the session when return response has no "data" field
-   */
-  @Test
-  void testStopConditionNoMoreData() {
-    WorkUnitState state = mock(WorkUnitState.class);
-    InputStream inputStream = getClass().getResourceAsStream("/json/eloqua-export-last-page.json");
-    WorkUnitStatus status = WorkUnitStatus.builder().buffer(inputStream).build();
-    status.setTotalCount(TOTAL_COUNT);
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("ms.data.field", "")).thenReturn("items");
-    when(sourceState.getProp("ms.pagination", "")).thenReturn("{\"fields\": [\"offset\", \"limit\"], \"initialvalues\": [0, 5000]}");
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageSource mockSource = mock(HttpSource.class);
-    JsonExtractor extractor = new JsonExtractor(state, mockSource);
-    extractor.jsonExtractorKeys.setTotalCount(TOTAL_COUNT);
-
-    when(mockSource.getFirst(extractor)).thenReturn(status);
-    doNothing().when(mockSource).closeStream(extractor);
-    when(mockSource.getSourceKeys()).thenReturn(source.getSourceKeys());
-
-    Assert.assertFalse(extractor.processInputStream(0));
-  }
-
   /**
    * Test Extractor shall stop the session when total count of records is met
    */
@@ -369,7 +270,10 @@ public class JsonExtractorTest {
   void testStopConditionTotalCountMet() {
     WorkUnitState state = mock(WorkUnitState.class);
     InputStream inputStream = getClass().getResourceAsStream("/json/last-page-with-data.json");
-    WorkUnitStatus status = WorkUnitStatus.builder().buffer(inputStream).build();
+    WorkUnitStatus status = WorkUnitStatus.builder()
+        .messages(new HashMap<>())
+        .sessionKey("")
+        .buffer(inputStream).build();
     status.setTotalCount(TOTAL_COUNT);
 
     SourceState sourceState = mock(SourceState.class);
@@ -397,14 +301,14 @@ public class JsonExtractorTest {
   void testCounts() {
     WorkUnitState state = mock(WorkUnitState.class);
     InputStream inputStream = getClass().getResourceAsStream("/util/users.json");
-    WorkUnitStatus status = WorkUnitStatus.builder().buffer(inputStream).build();
+    WorkUnitStatus status = WorkUnitStatus.builder()
+        .messages(new HashMap<>())
+        .sessionKey("")
+        .buffer(inputStream).build();
 
     SourceState sourceState = mock(SourceState.class);
 
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("lva1-gaap-proxy-vip-2.prod.linkedin.com");
     when(sourceState.getProp("extract.table.type", "SNAPSHOT_ONLY")).thenReturn("SNAPSHOT_ONLY");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
     when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
     HttpSource source = new HttpSource();
     source.getWorkunits(sourceState);
@@ -417,10 +321,10 @@ public class JsonExtractorTest {
     when(mockSource.getSourceKeys()).thenReturn(source.getSourceKeys());
 
     extractor.getSchema();
-    Assert.assertEquals(extractor.jsonExtractorKeys.getTotalCount(), 100);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getTotalCount(), 100);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getSetCount(), 100);
-    Assert.assertEquals(extractor.getWorkUnitStatus().getPageStart(), 100);
+    Assert.assertEquals(extractor.jsonExtractorKeys.getTotalCount(), 1);
+    Assert.assertEquals(extractor.getWorkUnitStatus().getTotalCount(), 1);
+    Assert.assertEquals(extractor.getWorkUnitStatus().getSetCount(), 1);
+    Assert.assertEquals(extractor.getWorkUnitStatus().getPageStart(), 1);
   }
 
   @Test

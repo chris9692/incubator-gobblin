@@ -272,7 +272,7 @@ public class JsonSchemaGenerator {
    * @param kvArray an array of KV pairs
    * @return an array contains only the value part
    */
-  private JsonArray getValueArray(JsonArray kvArray) {
+  JsonArray getValueArray(JsonArray kvArray) {
     int i = 0;
     while (kvArray.get(i).isJsonNull()) {
       ++i;

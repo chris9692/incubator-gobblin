@@ -80,25 +80,6 @@ public class MultistageExtractorTest extends PowerMockTestCase {
   }
 
   @Test
-  public void testInitialization() {
-    WorkUnitState state = mock(WorkUnitState.class);
-    when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("[{\"name\": \"activityDate\", \"formula\": {\"type\": \"epoc\", \"source\": \"fromDateTime\", \"format\": \"yyyy-MM-dd'T'HH:mm:ss'Z'\"}}]");
-    when(state.getProp("ms.output.schema", new JsonArray().toString())).thenReturn("");
-    when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn("{\"a\":\"x\"}");
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("lva1-gaap-proxy-vip-2.prod.linkedin.com");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageExtractor extractor = new MultistageExtractor(state, source);
-    Assert.assertNotNull(source.getSourceKeys().getDerivedFields());
-  }
-
-  @Test
   public void testJobProperties() {
     WorkUnitState state = mock(WorkUnitState.class);
     when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn("[{\"name\": \"activityDate\", \"formula\": {\"type\": \"epoc\", \"source\": \"fromDateTime\", \"format\": \"yyyy-MM-dd'T'HH:mm:ss'Z'\"}}]");
@@ -140,63 +121,6 @@ public class MultistageExtractorTest extends PowerMockTestCase {
 
     // low watermark by default is 2017-01-01
     Assert.assertEquals("1546329600000", extractor.getWorkUnitWaterMarks().get("low").getAsString());
-  }
-
-  @Test
-  public void testGetOnePreprocessor() {
-    WorkUnitState state = mock(WorkUnitState.class);
-    when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn(
-        "[]");
-    when(state.getProp("ms.output.schema", new JsonArray().toString())).thenReturn("");
-    when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn(
-        "{\"a\":\"x\"}");
-    when(state.getProp("ms.extract.preprocessor.parameters", new JsonObject().toString())).thenReturn(
-        "{\"org.apache.gobblin.multistage.preprocessor.GpgProcessor\":" +
-            "{\"keystore_path\" :\"some path\", \"keystore_password\" : \"some password\"}}");
-    when(state.getProp("ms.extract.preprocessors", new String())).thenReturn(
-        "org.apache.gobblin.multistage.preprocessor.GpgProcessor");
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("some url");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageExtractor extractor = new MultistageExtractor(state, source);
-
-    List<InputStreamProcessor> res = extractor.getPreprocessors(state);
-    Assert.assertEquals(res.size(), 1);
-  }
-
-  @Test
-  public void testGetTwoPreprocessors() {
-    WorkUnitState state = mock(WorkUnitState.class);
-    when(state.getProp("ms.derived.fields", new JsonArray().toString())).thenReturn(
-        "[]");
-    when(state.getProp("ms.output.schema", new JsonArray().toString())).thenReturn("");
-    when(state.getProp("ms.activation.property", new JsonObject().toString())).thenReturn(
-        "{\"a\":\"x\"}");
-    when(state.getProp("ms.extract.preprocessor.parameters", new JsonObject().toString())).thenReturn(
-        "{\"org.apache.gobblin.multistage.preprocessor.GpgProcessor\":" +
-            "{\"keystore_path\" :\"some path\", \"keystore_password\" : \"some password\"}}");
-    when(state.getProp("ms.extract.preprocessors", new String())).thenReturn(
-        "org.apache.gobblin.multistage.preprocessor.GpgProcessor,"+
-            "org.apache.gobblin.multistage.preprocessor.GunzipProcessor");
-
-    SourceState sourceState = mock(SourceState.class);
-    when(sourceState.getProp("gobblinGaapHttpClientFactory.authType")).thenReturn("plain_text");
-    when(sourceState.getProp("source.conn.use.proxy.url")).thenReturn("some url");
-    when(sourceState.contains("source.conn.use.proxy.url")).thenReturn(true);
-    when(sourceState.getProp(JobProperties.MSTAGE_OUTPUT_SCHEMA.getConfig(), "")).thenReturn("");
-    MultistageSource source = new HttpSource();
-    source.getWorkunits(sourceState);
-
-    MultistageExtractor extractor = new MultistageExtractor(state, source);
-
-    List<InputStreamProcessor> res = extractor.getPreprocessors(state);
-    Assert.assertEquals(res.size(), 2);
   }
 
   @Test

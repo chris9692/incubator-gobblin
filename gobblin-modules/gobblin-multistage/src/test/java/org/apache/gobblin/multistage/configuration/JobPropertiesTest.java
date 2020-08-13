@@ -140,14 +140,6 @@ public class JobPropertiesTest {
   }
 
   /**
-   * test default gaap connection read timeout value
-   */
-  @Test
-  public void testGetDefaultValueGaapReadTimeout() {
-    Assert.assertEquals(JobProperties.MSTAGE_GAAP_READ_TIMEOUT_MILLIS.getValidNonblankWithDefault(new State()), new Integer(3600000));
-  }
-
-  /**
    * Test getValidNonblankWithDefault
    */
   @Test

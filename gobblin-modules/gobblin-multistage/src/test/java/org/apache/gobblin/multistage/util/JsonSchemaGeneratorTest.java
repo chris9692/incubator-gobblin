@@ -249,13 +249,7 @@ public class JsonSchemaGeneratorTest {
   public void testGetValueArray() throws Exception {
     JsonSchemaGenerator generator = new JsonSchemaGenerator(mock(JsonElement.class));
     JsonArray kvArray = gson.fromJson("[null,{\"category\":\"authentication\"}]", JsonArray.class);
-    Assert.assertEquals(Whitebox.invokeMethod(generator, "getValueArray", kvArray).toString(),
+    Assert.assertEquals(generator.getValueArray(kvArray).toString(),
         "[null,\"authentication\"]");
-  }
-
-  @Test(expectedExceptions = AssertionFailedError.class)
-  public void testGetValueArrayWithInvalidInput() throws Exception {
-    JsonSchemaGenerator generator = new JsonSchemaGenerator(mock(JsonElement.class));
-    Whitebox.invokeMethod(generator, "getValueArray", new JsonArray());
   }
 }

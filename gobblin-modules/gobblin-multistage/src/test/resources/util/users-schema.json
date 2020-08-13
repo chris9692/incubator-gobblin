@@ -16,7 +16,7 @@
     "emailAliases": {
       "type": "array",
       "items": {
-        "type": ["string", "null"]
+        "type": "string"
       }
     },
     "firstName": {
@@ -26,10 +26,10 @@
       "type": "string"
     },
     "title": {
-      "type": ["string", "null"]
+      "type": "string"
     },
     "phoneNumber": {
-      "type": ["string", "null"]
+      "type": "string"
     },
     "extension": {
       "type": "null"
@@ -61,7 +61,7 @@
       }
     },
     "managerId": {
-      "type": ["string", "null"]
+      "type": "string"
     }
   }
 }

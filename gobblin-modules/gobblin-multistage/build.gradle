@@ -35,15 +35,8 @@ dependencies {
   compile project(":gobblin-api")
   compile project(":gobblin-core")
   compile project(":gobblin-core-base")
-  //compile project(":gobblin-http")
-  //runtime project(":gobblin-azkaban")
-  //runtime project(":gobblin-kafka-08")
-  //runtime project(":gobblin-kafka-common")
-  //runtime project(":gobblin-metrics")
-  //compile project(":gobblin-runtime")
-  //runtime project(":gobblin-sql")
+  compile project(":gobblin-runtime")
 
-  //runtime externalDependency.commonsCsv
   runtime externalDependency.commonsLang3
   runtime externalDependency.gson
   compile externalDependency.guava
@@ -52,22 +45,15 @@ dependencies {
   compile externalDependency.slf4j
   runtime externalDependency.typesafeConfig
 
-  //testCompile externalDependency.hsqldb
-  //testCompile externalDependency.jmockit
+  testCompile externalDependency.jmockit
   testCompile externalDependency.mockito
   testCompile externalDependency.powermock
-  //testCompile externalDependency.powermockApiMockito
-  //testCompile externalDependency.powermockModuleTestng
+  testCompile externalDependency.powermockApiMockito
+  testCompile externalDependency.powermockModuleTestng
   testCompile externalDependency.testng
 }
 
 configurations {
-  all*.exclude group: 'com.linkedin.hadoop'
-  all*.exclude group: 'com.linkedin.hive'
-  all*.exclude group: 'com.linkedin.pig'
-  all*.exclude group: 'com.linkedin.azkaban'
-  all*.exclude group: 'com.linkedin.azkaban-plugins'
-  all*.exclude group: 'com.linkedin.spark'
   all*.exclude group: 'kafka'
   all*.exclude group: 'org.apache.kafka'
   all*.exclude group: 'org.apache.hive'
@@ -103,11 +89,4 @@ shadowJar {
 
 artifacts {
   archives shadowJar
-}
-
-test {
-  doFirst {
-    def jmockitPath = configurations.getByName("testCompile").copy().files.find {it.name.contains("jmockit") }.absolutePath
-    jvmArgs "-javaagent:$jmockitPath"
-  }
 }

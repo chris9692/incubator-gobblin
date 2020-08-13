@@ -41,6 +41,7 @@ public class WorkUnitStatusTest {
         .pageNumber(1)
         .pageSize(100)
         .totalCount(10)
+        .sessionKey("")
         .messages(messages)
         .build()
         .toString());
