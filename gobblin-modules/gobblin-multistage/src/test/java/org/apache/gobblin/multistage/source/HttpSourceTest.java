@@ -122,7 +122,7 @@ public class HttpSourceTest extends PowerMockTestCase {
     when(state.getProp("extract.table.name", "")).thenReturn("table1");
     when(state.getProp("source.conn.username", "")).thenReturn("X7CWBD5V4T6DR77WY23YSHACH55K2OXA");
     when(state.getProp("source.conn.password", "")).thenReturn("");
-    when(state.getProp("ms.source.uri", "")).thenReturn("https://api.gong.io/v2/users");
+    when(state.getProp("ms.source.uri", "")).thenReturn("https://api.abc.io/v2/users");
     when(state.getProp("ms.authentication", new JsonObject().toString())).thenReturn("{\"method\":\"basic\",\"encryption\":\"base64\", \"header\": \"Authorization\"}");
     when(state.getProp("ms.http.request.headers", new JsonObject().toString())).thenReturn("{\"Content-Type\": \"application/json\"}");
     when(state.getProp("ms.http.request.method", "")).thenReturn("GET");
@@ -190,7 +190,7 @@ public class HttpSourceTest extends PowerMockTestCase {
     when(state.getProp("extract.table.name", "")).thenReturn("table1");
     when(state.getProp("source.conn.username", "")).thenReturn("X7CWBD5V4T6DR77WY23YSHACH55K2OXA");
     when(state.getProp("source.conn.password", "")).thenReturn("");
-    when(state.getProp("ms.source.uri", "")).thenReturn("https://api.gong.io/v2/users");
+    when(state.getProp("ms.source.uri", "")).thenReturn("https://api.abc.io/v2/users");
     when(state.getProp("ms.authentication", new JsonObject().toString())).thenReturn("{\"method\":\"basic\",\"encryption\":\"base64\", \"header\": \"Authorization\"}");
     when(state.getProp("ms.http.request.headers", new JsonObject().toString())).thenReturn("{\"Content-Type\": \"application/json\"}");
     when(state.getProp("ms.http.request.method", "")).thenReturn("GET");

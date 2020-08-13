@@ -130,30 +130,6 @@ public enum MultistageProperties {
    */
   MSTAGE_CALL_INTERVAL("ms.call.interval.millis", Long.class),
   MSTAGE_CSV_COLUMN_HEADER("ms.csv.column.header", Boolean.class),
-  MSTAGE_CSV_SEPARATOR("ms.csv.separator", String.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) ",";
-    }
-  }, MSTAGE_CSV_QUOTE_CHARACTER("ms.csv.quote.character", String.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) "\"";
-    }
-  }, MSTAGE_CSV_ESCAPE_CHARACTER("ms.csv.escape.character", String.class) {
-    @Override
-    public <T> T getDefaultValue() {
-      return (T) "u005C";
-    }
-  },
-  /**
-   * if csv.column.header is true, csv.skip.lines will be 1 by default, if more than 1
-   * row to be skipped, then set this parameter explicitly.
-   *
-   * if csv.column.header is false, csv.skip.lines will be 0 by default, if there are
-   * rows to be skipped, then set this parameter explicitly.
-   */
-  MSTAGE_CSV_SKIP_LINES("ms.csv.skip.lines", Integer.class),
   /**
    * a comma-separated string, where each value is either an integer or a range
    * representing the index of the field to include
@@ -173,6 +149,32 @@ public enum MultistageProperties {
       return columnProjections != null && columnProjections.split(",").length > 0;
     }
   },
+  MSTAGE_CSV_ESCAPE_CHARACTER("ms.csv.escape.character", String.class) {
+    @Override
+    public <T> T getDefaultValue() {
+      return (T) "u005C";
+    }
+  },
+  MSTAGE_CSV_QUOTE_CHARACTER("ms.csv.quote.character", String.class) {
+    @Override
+    public <T> T getDefaultValue() {
+      return (T) "\"";
+    }
+  },
+  MSTAGE_CSV_SEPARATOR("ms.csv.separator", String.class) {
+    @Override
+    public <T> T getDefaultValue() {
+      return (T) ",";
+    }
+  },
+  /**
+   * if csv.column.header is true, csv.skip.lines will be 1 by default, if more than 1
+   * row to be skipped, then set this parameter explicitly.
+   *
+   * if csv.column.header is false, csv.skip.lines will be 0 by default, if there are
+   * rows to be skipped, then set this parameter explicitly.
+   */
+  MSTAGE_CSV_SKIP_LINES("ms.csv.skip.lines", Integer.class),
   MSTAGE_DATA_DEFAULT_TYPE("ms.data.default.type", JsonObject.class),
   /**
    * DATA_FIELD specified where true data payload is in a nested structure.
